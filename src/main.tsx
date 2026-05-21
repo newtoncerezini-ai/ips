@@ -585,8 +585,7 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
   const [mapMetric, setMapMetric] = useState(indicator || IPS);
   const [hoverCode, setHoverCode] = useState<string | null>(null);
   const byCode = new globalThis.Map(rows.map((row) => [row.code, row]));
-  const selected = byCode.get(selectedCode) ?? rows[0];
-  const hovered = hoverCode ? byCode.get(hoverCode) : selected;
+  const hovered = hoverCode ? byCode.get(hoverCode) : null;
   const breaks = mapBreaks(rows, mapMetric);
   const metricOptions = [
     { title: "Índice de Progresso Social", options: [IPS] },
@@ -614,15 +613,6 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
             </details>
           ))}
         </div>
-        <div className="map-legend">
-          <h3>Legenda</h3>
-          {breaks.map((item) => (
-            <div key={`${item.color}-${item.min}-${item.max}`}>
-              <span style={{ background: item.color }} />
-              <p>{formatNumber(item.min)} - {formatNumber(item.max)}</p>
-            </div>
-          ))}
-        </div>
       </section>
 
       <section className="panel map-panel">
@@ -635,7 +625,6 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
             <span>{hovered.region}</span>
             <p>{mapMetric}</p>
             <em>{formatNumber(getValue(hovered, mapMetric))}</em>
-            <button onClick={() => setView("scorecard")}>Ver detalhes</button>
           </div>
         )}
         <svg viewBox={data.map.viewBox} className="pe-map" role="img" aria-label="Mapa dos municípios de Pernambuco">
@@ -657,6 +646,15 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
             );
           })}
         </svg>
+        <div className="map-legend">
+          <h3>Legenda</h3>
+          {breaks.map((item) => (
+            <div key={`${item.color}-${item.min}-${item.max}`}>
+              <span style={{ background: item.color }} />
+              <p>{formatNumber(item.min)} - {formatNumber(item.max)}</p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
