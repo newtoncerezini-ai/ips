@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .sidebar-item-active {
+            border-left: 2px solid #39b8fd;
+            background-color: rgba(56, 72, 93, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed": "#c9e6ff",
+                        "background": "#f7f9fb",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-container": "#eceef0",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "secondary-container": "#39b8fd",
+                        "tertiary": "#000000",
+                        "tertiary-container": "#0b1c30",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "inverse-primary": "#bec6e0",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#89ceff",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-primary-fixed": "#131b2e",
+                        "primary-fixed": "#dae2fd",
+                        "surface-variant": "#e0e3e5",
+                        "outline-variant": "#c6c6cd",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary-container": "#004666",
+                        "on-tertiary-container": "#75859d",
+                        "on-secondary-fixed": "#001e2f",
+                        "secondary": "#006591",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-primary-container": "#7c839b",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "primary-container": "#131b2e",
+                        "surface-container-low": "#f2f4f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "margin-desktop": "32px",
+                        "container-max": "1440px",
+                        "sidebar-width": "280px",
+                        "gutter": "24px",
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-stack-lg bg-tertiary-container w-sidebar-width shadow-sm z-50">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-on-tertiary flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="The state seal of Pernambuco presented in a clean, minimalist vector style. The seal is rendered in high-contrast white against a deep navy blue background, conveying authority and official governance. The overall lighting is studio-quality, ensuring every detail of the crest is sharp and professional, perfectly suited for an executive dashboard environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJtw4dpL6jh0xT4zS6qobZ1SDPksAyNp1055cFVu1vkJoxA0ZbHPXpjoosbJEe4OJc6JMHMfCThcPFJ-0e2itE0DHntGo57YwTf8WUELVs9uU9DYbtXzWjnzTMTMiXXjXStGsB2wWKxm6BI79e66wszmpcPNVfGjCkQ1L0nr20dfzbCGEnAVR0llvh-lKUF7b8y6kiMd1ciXpmuRUW-7FEgo52sqiq3_mFPllA3gR6YJ8xU1zKR036GX4A4noFK3dEDfSqIGOXV1Yu"/>
+</div>
+<div>
+<h1 class="text-headline-sm font-black text-on-tertiary leading-tight">IPS Dashboard</h1>
+<p class="text-label-md font-label-md text-on-tertiary-container">Executive View</p>
+</div>
+</div>
+</div>
+<nav class="flex-grow">
+<ul class="space-y-1">
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="text-secondary-container border-l-2 border-secondary-container bg-on-tertiary-fixed-variant/10 px-4 py-3 flex items-center gap-3 active:opacity-80 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+<span class="text-label-md font-label-md">Ranking</span>
+</a>
+</li>
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="text-label-md font-label-md">Map</span>
+</a>
+</li>
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+</li>
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="mt-auto border-t border-on-tertiary-fixed-variant/10 pt-4">
+<ul class="space-y-1">
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-label-md font-label-md">Support</span>
+</a>
+</li>
+<li>
+<a class="text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-label-md font-label-md">Sign Out</span>
+</a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- TopAppBar (Shared Component Implementation) -->
+<header class="fixed top-0 right-0 h-16 ml-sidebar-width flex justify-between items-center w-[calc(100%-280px)] px-margin-desktop bg-surface border-b border-outline-variant z-40">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-sm font-bold text-on-surface">IPS Pernambuco</h2>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<nav class="flex gap-6">
+<a class="text-body-md font-body-md text-secondary border-b-2 border-secondary font-bold py-5" href="#">Ranking</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:bg-surface-container transition-colors px-2 py-5" href="#">Visão Geral</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all scale-95 active:scale-90" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all scale-95 active:scale-90" data-icon="settings">settings</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="Executive User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a senior government official or executive user. The individual has a confident, composed expression, wearing business-formal attire. The background is a soft-focus office environment with neutral tones, illuminated by warm, natural light that highlights the professional and authoritative tone of the IPS Pernambuco platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR8KPs8frwcy92OTooBAXUF3Yv67jXud7-nrnwubycVJw9StwR-Ercb87t-LIIo9HkXc6z3u_6A-qxcyRHUH6zqtoC3zsIFWiJSC5IQ9JZajKHR7aMGVZNRH_Hc6oES0pUYgM8NDlzQpMN3mbw6cR5wMEDZuALNG56W8OO8A8guXqndY05vA3Q9dCHK0Oj6mgqODFs82-3OnnDmxWO8aqpkph95oh-UA4bDmq2_1xr_4GKyx6VJ5qKQ096CwjAvaRN1elaEQ3N0N3C"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pl-sidebar-width min-h-screen">
+<div class="max-w-container-max mx-auto px-margin-desktop pb-margin-desktop">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-6">
+<span class="text-body-sm font-body-sm text-on-tertiary-container">Início</span>
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="chevron_right">chevron_right</span>
+<span class="text-body-sm font-body-sm text-secondary font-semibold">Ranking de Municípios</span>
+</nav>
+<!-- Page Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary mb-2">Ranking de Municípios - IPS PE</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Análise comparativa do Índice de Progresso Social por regiões administrativas.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline rounded hover:bg-surface-container transition-colors text-body-sm font-semibold">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                        Exportar CSV
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary text-on-secondary rounded hover:opacity-90 transition-all text-body-sm font-semibold shadow-sm">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+                        Compartilhar
+                    </button>
+</div>
+</div>
+<!-- Filters & Search Bar -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 mb-8 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<div class="md:col-span-4 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:outline-none text-body-sm" placeholder="Buscar município..." type="text"/>
+</div>
+<div class="md:col-span-3">
+<select class="w-full px-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:outline-none text-body-sm appearance-none">
+<option>Mesorregião (Todas)</option>
+<option>Metropolitana</option>
+<option>Agreste</option>
+<option>Sertão</option>
+<option>Mata</option>
+</select>
+</div>
+<div class="md:col-span-3">
+<select class="w-full px-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:outline-none text-body-sm">
+<option>Ano: 2024</option>
+<option>Ano: 2023</option>
+<option>Ano: 2022</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<button class="w-full h-full bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold py-2 rounded-lg border border-outline-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                            Mais Filtros
+                        </button>
+</div>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Posição</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Município</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Mesorregião</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-right">Pontuação IPS</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Tendência</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-container font-bold text-body-sm">01</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Recife</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Metropolitana do Recife</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">74.28</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="text-label-md">+1.2%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface font-bold text-body-sm">02</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Olinda</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Metropolitana do Recife</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">72.15</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="text-label-md">+0.8%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface font-bold text-body-sm">03</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Petrolina</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Sertão São Francisco</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">71.80</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-amber-600">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_flat">trending_flat</span>
+<span class="text-label-md">Estável</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface font-bold text-body-sm">04</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Caruaru</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Agreste Pernambucano</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">69.42</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="text-label-md">+2.4%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface font-bold text-body-sm">05</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Jaboatão dos Guararapes</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Metropolitana do Recife</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">68.10</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_down">trending_down</span>
+<span class="text-label-md">-0.5%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-6 py-5">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-on-surface font-bold text-body-sm">06</span>
+</td>
+<td class="px-6 py-5 text-body-md font-semibold text-primary">Garanhuns</td>
+<td class="px-6 py-5 text-body-sm text-on-surface-variant">Agreste Pernambucano</td>
+<td class="px-6 py-5 text-right font-mono font-bold text-secondary text-body-md">66.95</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="text-label-md">+0.3%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<button class="text-secondary hover:underline text-label-md font-semibold">Ver Detalhes</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<span class="text-body-sm text-on-surface-variant">Mostrando 1-6 de 184 municípios</span>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded bg-secondary text-on-secondary font-bold text-body-sm">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors text-body-sm">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors text-body-sm">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors text-body-sm">31</button>
+<button class="w-10 h-10 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dashboard Summary Widgets -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Média Estadual</h3>
+<span class="material-symbols-outlined text-secondary-container" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-display-lg font-display-lg text-primary">62.4</span>
+<span class="text-body-sm text-on-surface-variant mb-2">pontos</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_upward">arrow_upward</span>
+<span class="text-label-md">+0.4% em relação ao ano anterior</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Maior Evolução</h3>
+<span class="material-symbols-outlined text-secondary-container" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-md font-headline-md text-primary">Caruaru</span>
+<span class="text-body-sm text-on-surface-variant">Agreste Pernambucano</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex items-center gap-2 text-green-600">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="text-label-md">2.4 pontos de crescimento</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Distribuição Geográfica</h3>
+<span class="material-symbols-outlined text-secondary-container" data-icon="public">public</span>
+</div>
+<div class="h-16 flex items-end gap-1">
+<div class="flex-1 bg-secondary-fixed h-[40%] rounded-t-sm" title="Metropolitana"></div>
+<div class="flex-1 bg-secondary-fixed h-[75%] rounded-t-sm" title="Agreste"></div>
+<div class="flex-1 bg-secondary h-[90%] rounded-t-sm" title="Mata"></div>
+<div class="flex-1 bg-secondary-fixed h-[55%] rounded-t-sm" title="Sertão"></div>
+<div class="flex-1 bg-secondary-fixed h-[30%] rounded-t-sm" title="São Francisco"></div>
+</div>
+<div class="mt-2 text-label-md text-center text-on-surface-variant">Índice por Mesorregião</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions and hover effects
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Search highlight simulation
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.opacity = text.includes(val) ? '1' : '0.4';
+                row.style.filter = text.includes(val) ? 'none' : 'grayscale(100%)';
+            });
+        });
+    </script>
+</body></html>

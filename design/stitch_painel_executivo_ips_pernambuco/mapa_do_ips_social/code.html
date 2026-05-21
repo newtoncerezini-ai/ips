@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .map-container { position: relative; width: 100%; height: 100%; min-height: 600px; background: #ffffff; border-radius: 0.5rem; border: 1px solid #E2E8F0; overflow: hidden; }
+        .glass-panel { backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .municipality-hover:hover { fill: #39b8fd; transition: fill 0.2s ease; cursor: pointer; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ba1a1a",
+                      "on-surface-variant": "#45464d",
+                      "on-secondary-fixed-variant": "#004c6e",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tint": "#565e74",
+                      "inverse-surface": "#2d3133",
+                      "secondary-fixed": "#c9e6ff",
+                      "background": "#f7f9fb",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "surface-container": "#eceef0",
+                      "on-primary": "#ffffff",
+                      "surface-bright": "#f7f9fb",
+                      "on-background": "#191c1e",
+                      "secondary-container": "#39b8fd",
+                      "tertiary": "#000000",
+                      "tertiary-container": "#0b1c30",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "inverse-primary": "#bec6e0",
+                      "on-error": "#ffffff",
+                      "surface": "#f7f9fb",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#89ceff",
+                      "on-surface": "#191c1e",
+                      "tertiary-fixed": "#d3e4fe",
+                      "on-primary-fixed": "#131b2e",
+                      "primary-fixed": "#dae2fd",
+                      "surface-variant": "#e0e3e5",
+                      "outline-variant": "#c6c6cd",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-container-high": "#e6e8ea",
+                      "on-secondary-container": "#004666",
+                      "on-tertiary-container": "#75859d",
+                      "on-secondary-fixed": "#001e2f",
+                      "secondary": "#006591",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "on-primary-container": "#7c839b",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#d8dadc",
+                      "primary": "#000000",
+                      "outline": "#76777d",
+                      "primary-container": "#131b2e",
+                      "surface-container-low": "#f2f4f6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "margin-desktop": "32px",
+                      "container-max": "1440px",
+                      "sidebar-width": "280px",
+                      "gutter": "24px",
+                      "stack-lg": "24px",
+                      "margin-mobile": "16px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-stack-lg bg-tertiary-container dark:bg-tertiary-container w-sidebar-width shadow-sm z-50">
+<div class="px-6 mb-10">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded bg-on-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container">analytics</span>
+</div>
+<h1 class="text-headline-sm font-black text-on-tertiary">IPS Dashboard</h1>
+</div>
+<p class="text-body-sm text-on-tertiary-container">Executive View</p>
+</div>
+<nav class="flex-grow flex flex-col gap-1">
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-md text-label-md">Ranking</span>
+</a>
+<!-- Active State: Map -->
+<a class="text-secondary-container dark:text-secondary-fixed border-l-2 border-secondary-container bg-on-tertiary-fixed-variant/10 px-4 py-3 flex items-center gap-3 opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-label-md text-label-md">Map</span>
+</a>
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 border-t border-on-tertiary-fixed-variant/20 pt-4">
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="text-on-tertiary-container dark:text-on-tertiary-fixed-variant px-4 py-3 flex items-center gap-3 hover:bg-on-tertiary-fixed-variant/20 hover:text-on-tertiary transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 ml-sidebar-width h-16 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-on-surface-variant flex justify-between items-center px-margin-desktop z-40">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-sm font-bold text-on-surface">Mapa de Calor Social - IPS</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container p-2 rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container p-2 rounded-full transition-colors">settings</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="text-label-md font-bold">Gov. Pernambuco</p>
+<p class="text-[10px] text-on-surface-variant">SECRETARIA DE PLANEJAMENTO</p>
+</div>
+<img alt="Executive User Profile" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtexUWQBHCepnD4tjhXGO29oncwkjIetKfD-dYC9yDvx0bYIa8aTKp2Fs-uvwTntANq7kONp45s-YnUuXASTODmJ0fvcBtSpe9Oqa3l8mQqaw6oCuIueQA0qs_SIbXqKQ83RENxmkK1Z3ngUtN7Aax1Qk02cEAsn0CM7mSaa891i0IfFFpUPm2lwFMrdjtH-nMCdGhzu4lHDlCIJ-BKQZWyTgCznsaWn9Vub5tqng6IIH_yGk1UX5K1TdHGHbjVmPtpJHoT0s6klfe"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width pt-24 px-margin-desktop pb-10 min-h-screen">
+<!-- Dashboard Filters Row -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<nav class="flex gap-2 text-body-sm text-on-tertiary-container mb-2">
+<span class="hover:text-primary cursor-pointer">Estado</span>
+<span>/</span>
+<span class="font-bold text-primary">Pernambuco</span>
+</nav>
+<h3 class="text-headline-md font-headline-md text-primary">Índice de Progresso Social (2024)</h3>
+</div>
+<div class="flex gap-3">
+<div class="bg-white border border-outline-variant rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
+<span class="text-label-md text-on-surface-variant">DIMENSÃO:</span>
+<select class="bg-transparent border-none text-body-sm font-bold focus:ring-0 p-0 cursor-pointer">
+<option>Geral (IPS)</option>
+<option>Necessidades Humanas Básicas</option>
+<option>Fundamentos do Bem-Estar</option>
+<option>Oportunidades</option>
+</select>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg text-label-md font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    EXPORTAR DADOS
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter h-[calc(100vh-280px)]">
+<!-- Map Area (Bento Main) -->
+<div class="col-span-9 map-container bg-white relative">
+<!-- Map Placeholder Logic -->
+<div class="absolute inset-0 z-0 bg-slate-50 flex items-center justify-center overflow-hidden">
+<!-- A stylized representation of PE Map -->
+<img class="w-full h-full object-cover opacity-80" data-alt="A sophisticated interactive digital map of the state of Pernambuco, Brazil, displayed on a high-tech dashboard interface. The map is divided into municipalities, each colored with different shades of professional deep blue and soft azure to represent a heat map of social progress scores. The coastal areas, particularly around Recife, are highlighted with brighter interactive glow. The overall aesthetic is clean, corporate, and minimalist, featuring soft lighting and a crisp white background that emphasizes the data-driven purpose of the visualization." data-location="Pernambuco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmtfCYFU3cY-fSEM20rmKAya-5qfsxMEbc9UNTsh5uEqci3KKRPKSsuQASUWXuU6eSEH4V6AP0DjZFTUq_ncZ6StOtEfbaLw6yz7nfob6Ye3qDRKtR4WCY35zeSKpQVuGEYVuGFSlOC5OKiI7Cl4ER7QORFsv1tv8UubzEHRuhARAUYNZZG_ZdmhQr5j7Da58i8m7KN_KLxQt1CVFCgG5dgXnQ0Kf1pVsnh4Juljucy5EohRiCYXtIau00iZ-frFwXi4_2yAf3nnkf"/>
+<!-- SVG Overlay for interactive elements (simplified concept) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 1000 600">
+<!-- Example Recife Region Node -->
+<circle class="fill-secondary-container stroke-white stroke-2 animate-pulse pointer-events-auto cursor-pointer" cx="920" cy="380" r="12"></circle>
+</svg>
+</div>
+<!-- Tooltip Overlay for Recife (As requested) -->
+<div class="absolute top-[340px] right-[40px] z-20 w-72 glass-panel p-stack-md rounded-xl shadow-xl transition-all">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-headline-sm font-bold text-primary">Recife</h4>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Região Metropolitana</p>
+</div>
+<div class="bg-secondary-container/20 text-secondary font-bold px-2 py-1 rounded text-label-md">
+                            Rank: 1º
+                        </div>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-body-sm font-medium">IPS Geral</span>
+<span class="text-body-sm font-bold text-secondary">74.2</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 74.2%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="p-2 bg-surface-container-low rounded border border-outline-variant/30">
+<p class="text-[10px] text-on-surface-variant">Saneamento</p>
+<p class="text-label-md font-bold">88.5</p>
+</div>
+<div class="p-2 bg-surface-container-low rounded border border-outline-variant/30">
+<p class="text-[10px] text-on-surface-variant">Segurança</p>
+<p class="text-label-md font-bold">52.1</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-secondary text-secondary text-label-md font-bold rounded hover:bg-secondary hover:text-white transition-all">
+                        VER DETALHES COMPLETOS
+                    </button>
+<!-- Arrow for Tooltip -->
+<div class="absolute bottom-[-8px] right-8 w-4 h-4 bg-white/80 border-r border-b border-outline-variant/30 rotate-45"></div>
+</div>
+<!-- Floating Zoom Controls -->
+<div class="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
+<button class="w-10 h-10 bg-white border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-white border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="w-10 h-10 bg-white border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+</div>
+<!-- Side Legend Area (Bento Sidebar) -->
+<div class="col-span-3 flex flex-col gap-gutter">
+<!-- Legend Card -->
+<div class="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+<h5 class="text-label-md font-bold text-on-surface-variant mb-6 uppercase tracking-widest">Legenda de Pontuação</h5>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-secondary"></div>
+<div>
+<p class="text-body-sm font-bold">Excelente (70 - 100)</p>
+<p class="text-[11px] text-on-surface-variant">Alto progresso social</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-secondary-container"></div>
+<div>
+<p class="text-body-sm font-bold">Bom (55 - 69)</p>
+<p class="text-[11px] text-on-surface-variant">Progresso satisfatório</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-secondary-fixed-dim"></div>
+<div>
+<p class="text-body-sm font-bold">Médio (40 - 54)</p>
+<p class="text-[11px] text-on-surface-variant">Necessidade de melhorias</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-secondary-fixed"></div>
+<div>
+<p class="text-body-sm font-bold">Baixo (0 - 39)</p>
+<p class="text-[11px] text-on-surface-variant">Crítico / Urgente</p>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant">
+<h5 class="text-[10px] font-black text-on-surface-variant uppercase mb-4">Média Estadual</h5>
+<div class="flex items-baseline gap-2">
+<span class="text-display-lg leading-none">58.4</span>
+<span class="text-body-sm text-on-surface-variant font-bold">/ 100</span>
+</div>
+<div class="flex items-center gap-1 text-error text-label-md mt-2">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+                            -1.2% vs ano anterior
+                        </div>
+</div>
+</div>
+<!-- Insights Card -->
+<div class="bg-tertiary-container text-on-tertiary rounded-xl p-6 flex-grow shadow-lg">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary-container">lightbulb</span>
+<h5 class="text-label-md font-bold uppercase tracking-wider">Insights Rápidos</h5>
+</div>
+<ul class="space-y-4">
+<li class="text-body-sm border-b border-on-tertiary-fixed-variant/20 pb-3">
+<strong class="text-secondary-container">Fernando de Noronha</strong> mantém o maior IPS histórico do estado (78.9).
+                        </li>
+<li class="text-body-sm border-b border-on-tertiary-fixed-variant/20 pb-3">
+                            O <strong class="text-secondary-container">Sertão do Araripe</strong> apresentou a maior evolução em saneamento (+12%).
+                        </li>
+<li class="text-body-sm">
+<strong class="text-secondary-container">12 municípios</strong> encontram-se na zona de alerta crítica de segurança alimentar.
+                        </li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction for tooltip and map elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const mapNodes = document.querySelectorAll('.animate-pulse');
+            mapNodes.forEach(node => {
+                node.addEventListener('mouseenter', () => {
+                    node.classList.remove('animate-pulse');
+                    node.setAttribute('r', '16');
+                });
+                node.addEventListener('mouseleave', () => {
+                    node.classList.add('animate-pulse');
+                    node.setAttribute('r', '12');
+                });
+            });
+        });
+    </script>
+</body></html>

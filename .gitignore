@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.log
+*.tsbuildinfo
+
+# Local downloads and inspection artifacts
+*.xlsx
+ips_app.js
+ips_*_page.html
+ips_old_*.html
+ips_current_*.html
+
+# Local screenshots/reference exports
+screen.png
+/Bandeira_de_Pernambuco.svg.png
+/brasil.png
