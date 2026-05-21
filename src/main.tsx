@@ -349,24 +349,28 @@ function App() {
             <p className="breadcrumb">Estado / Pernambuco</p>
             <h1>{titleFor(view)}</h1>
           </div>
-          <div className="top-actions">
-            <SearchBox value={query} onChange={setQuery} />
-            <Select label="Ano" value={String(year)} onChange={(value) => setYear(Number(value))} options={YEARS.map(String)} />
-          </div>
+          {view !== "map" && (
+            <div className="top-actions">
+              {(view === "overview" || view === "ranking") && <SearchBox value={query} onChange={setQuery} />}
+              <Select label="Ano" value={String(year)} onChange={(value) => setYear(Number(value))} options={YEARS.map(String)} />
+            </div>
+          )}
         </header>
 
-        <section className="filters">
-          <Select label="Região de Desenvolvimento" value={region} onChange={setRegion} options={["Todas", ...data.regions]} />
-          <Select label="Indicador" value={indicator} onChange={setIndicator} options={indicators} wide />
-          <button className="button ghost" onClick={() => (view === "scorecard" ? window.print() : undefined)}>
-            {view === "scorecard" ? <FileDown size={17} /> : <Download size={17} />}
-            {view === "scorecard" ? "Exportar PDF" : "Exportar CSV"}
-          </button>
-        </section>
+        {(view === "overview" || view === "ranking") && (
+          <section className="filters">
+            <Select label="Região de Desenvolvimento" value={region} onChange={setRegion} options={["Todas", ...data.regions]} />
+            <Select label="Indicador" value={indicator} onChange={setIndicator} options={indicators} wide />
+            <button className="button ghost">
+              <Download size={17} />
+              Exportar CSV
+            </button>
+          </section>
+        )}
 
         {view === "overview" && <Overview rows={rows} allRecords={data.records} year={year} indicator={indicator} setView={setView} setSelectedCode={setSelectedCode} />}
         {view === "ranking" && <Ranking rows={ranked} query={query} indicator={indicator} setSelectedCode={setSelectedCode} setView={setView} />}
-        {view === "map" && <MapView data={data} rows={allYearRows} indicator={indicator} selectedCode={selectedCode} setSelectedCode={setSelectedCode} setView={setView} />}
+        {view === "map" && <MapView data={data} rows={allYearRows} year={year} setYear={setYear} indicator={indicator} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "scorecard" && <Scorecard data={data} selected={selected} year={year} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "charts" && <ChartsPage data={data} year={year} tab={chartTab} setTab={setChartTab} />}
       </main>
@@ -581,38 +585,18 @@ function Ranking({ rows, query, indicator, setSelectedCode, setView }: { rows: R
   );
 }
 
-function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView }: { data: DashboardData; rows: RecordRow[]; indicator: string; selectedCode: string; setSelectedCode: (code: string) => void; setView: (view: View) => void }) {
+function MapView({ data, rows, year, setYear, indicator, selectedCode, setSelectedCode }: { data: DashboardData; rows: RecordRow[]; year: number; setYear: (year: number) => void; indicator: string; selectedCode: string; setSelectedCode: (code: string) => void }) {
   const [mapMetric, setMapMetric] = useState(indicator || IPS);
   const [hoverCode, setHoverCode] = useState<string | null>(null);
   const byCode = new globalThis.Map(rows.map((row) => [row.code, row]));
   const hovered = hoverCode ? byCode.get(hoverCode) : null;
   const breaks = mapBreaks(rows, mapMetric);
-  const metricOptions = [
-    { title: "Índice de Progresso Social", options: [IPS] },
-    { title: "Necessidades Humanas Básicas", options: ["Necessidades Humanas Básicas", "Nutrição e Cuidados Médicos Básicos", "Água e Saneamento", "Moradia", "Segurança Pessoal"] },
-    { title: "Fundamentos do Bem-estar", options: ["Fundamentos do Bem-estar", "Acesso ao Conhecimento Básico", "Acesso à Informação e Comunicação", "Saúde e Bem-estar", "Qualidade do Meio Ambiente"] },
-    { title: "Oportunidades", options: ["Oportunidades", "Direitos Individuais", "Liberdades Individuais e de Escolha", "Inclusão Social", "Acesso à Educação Superior"] },
-  ];
 
   return (
     <div className="map-workspace">
       <section className="map-toolbar">
+        <Select label="Ano" value={String(year)} onChange={(value) => setYear(Number(value))} options={YEARS.map(String)} />
         <Select label="Indicador do mapa" value={mapMetric} onChange={setMapMetric} options={[IPS, ...data.dimensions, ...data.components]} wide />
-        <div className="map-filter-groups">
-          {metricOptions.map((group) => (
-            <details key={group.title} open={group.options.includes(mapMetric)}>
-              <summary>{group.title}</summary>
-              <div>
-                {group.options.map((option) => (
-                  <button key={option} className={mapMetric === option ? "active" : ""} onClick={() => setMapMetric(option)}>
-                    <span />
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </details>
-          ))}
-        </div>
       </section>
 
       <section className="panel map-panel">
@@ -640,9 +624,7 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
                 onClick={() => row && setSelectedCode(code)}
                 onMouseEnter={() => row && setHoverCode(code)}
                 onMouseLeave={() => setHoverCode(null)}
-              >
-                <title>{row ? `${row.municipality}: ${formatNumber(score)}` : code}</title>
-              </path>
+              />
             );
           })}
         </svg>
