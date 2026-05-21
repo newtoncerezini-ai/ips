@@ -5,7 +5,6 @@ import {
   BookOpenText,
   ChevronDown,
   Download,
-  ExternalLink,
   LayoutDashboard,
   Map as MapIcon,
   Search,
@@ -429,7 +428,7 @@ function App() {
         {view === "map" && <MapView data={data} rows={allYearRows} year={year} setYear={setYear} indicator={indicator} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "scorecard" && <Scorecard data={data} selected={selected} year={year} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "charts" && <ChartsPage data={data} year={year} tab={chartTab} setTab={setChartTab} />}
-        {view === "dictionary" && <DataDictionary />}
+        {view === "dictionary" && <DataDictionary data={data} />}
       </main>
     </div>
   );
@@ -702,29 +701,125 @@ function MapView({ data, rows, year, setYear, indicator, selectedCode, setSelect
   );
 }
 
-function DataDictionary() {
-  const pdfPath = "/assets/dicionario-de-dados.pdf";
+function DataDictionary({ data }: { data: DashboardData }) {
+  const [query, setQuery] = useState("");
+  const lowerQuery = query.trim().toLocaleLowerCase("pt-BR");
+  const latestRows = data.records.filter((row) => row.year === 2026);
+  const described = new Set([IPS, GDP, "População", "Área (km²)", ...data.dimensions, ...data.components, ...SCORECARD_GROUPS.flatMap((group) => group.components.flatMap((component) => component.indicators))]);
+  const extraIndicators = data.indicators.filter((indicator) => !described.has(indicator));
+  const visible = (name: string) => !lowerQuery || name.toLocaleLowerCase("pt-BR").includes(lowerQuery);
+  const coverage = (indicator: string) => latestRows.filter((row) => getValue(row, indicator) != null).length;
+  const polarityLabel = (indicator: string) => (isLowerBetter(indicator) ? "Menor é melhor" : "Maior é melhor");
+  const dictionaryRow = (indicator: string, type: string) => {
+    if (!visible(indicator)) return null;
+    return (
+      <article key={`${type}-${indicator}`} className="dictionary-item">
+        <div>
+          <strong>{indicator}</strong>
+          <span>{type}</span>
+        </div>
+        <p>{polarityLabel(indicator)}</p>
+        <em>{coverage(indicator)}/{latestRows.length} municípios com dado em 2026</em>
+      </article>
+    );
+  };
+
   return (
     <div className="dictionary-page">
       <section className="panel dictionary-hero">
         <div>
-          <PanelTitle title="Dicionário de dados" subtitle="Documento metodológico com a descrição dos campos, indicadores e referências utilizados no painel." />
+          <PanelTitle title="Dicionário de dados" subtitle="Campos, eixos, componentes, indicadores e regras de leitura usados no painel." />
+          <div className="dictionary-search">
+            <Search size={18} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar no dicionário..." />
+          </div>
         </div>
-        <div className="dictionary-actions">
-          <a className="button ghost" href={pdfPath} target="_blank" rel="noreferrer">
-            <ExternalLink size={17} />
-            Abrir PDF
-          </a>
-          <a className="button" href={pdfPath} download>
-            <Download size={17} />
-            Baixar
-          </a>
+        <div className="dictionary-note">
+          <strong>Versão adaptada</strong>
+          <span>Conteúdo reorganizado para o padrão visual do painel IPS Pernambuco.</span>
         </div>
       </section>
 
-      <section className="dictionary-viewer">
-        <iframe title="Dicionário de dados do IPS Pernambuco" src={`${pdfPath}#toolbar=1&navpanes=0&view=FitH`} />
+      <section className="dictionary-summary-grid">
+        <article>
+          <span>Municípios</span>
+          <strong>185</strong>
+          <p>Recorte Pernambuco</p>
+        </article>
+        <article>
+          <span>Anos</span>
+          <strong>2024-2026</strong>
+          <p>Série disponível</p>
+        </article>
+        <article>
+          <span>Indicadores</span>
+          <strong>{data.indicators.length}</strong>
+          <p>Campos numéricos monitorados</p>
+        </article>
+        <article>
+          <span>Ranking</span>
+          <strong>PE e BR</strong>
+          <p>Cores por tercis em Pernambuco</p>
+        </article>
       </section>
+
+      <section className="dictionary-section">
+        <div className="dictionary-section-title">
+          <h2>Campos gerais</h2>
+          <p>Variáveis de identificação, escala territorial e contexto econômico-demográfico.</p>
+        </div>
+        <div className="dictionary-list">
+          {dictionaryRow(IPS, "Índice geral")}
+          {dictionaryRow(GDP, "Contexto econômico")}
+          {dictionaryRow("População", "Contexto demográfico")}
+          {dictionaryRow("Área (km²)", "Contexto territorial")}
+        </div>
+      </section>
+
+      {SCORECARD_GROUPS.map((group) => {
+        const dimensionVisible = visible(group.dimension);
+        const components = group.components
+          .map((component) => ({
+            ...component,
+            show: visible(component.name) || component.indicators.some(visible),
+          }))
+          .filter((component) => component.show);
+        if (!dimensionVisible && !components.length) return null;
+
+        return (
+          <section key={group.dimension} className="dictionary-section">
+            <div className="dictionary-section-title">
+              <h2>{group.dimension}</h2>
+              <p>Eixo do IPS com componentes e indicadores associados.</p>
+            </div>
+            <div className="dictionary-component-grid">
+              {components.map((component) => (
+                <article key={component.name} className="dictionary-component-card">
+                  <header>
+                    <span>Componente</span>
+                    <strong>{component.name}</strong>
+                  </header>
+                  <div className="dictionary-list compact">
+                    {component.indicators.map((indicator) => dictionaryRow(indicator, "Indicador"))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      {!!extraIndicators.filter(visible).length && (
+        <section className="dictionary-section">
+          <div className="dictionary-section-title">
+            <h2>Outros campos da base</h2>
+            <p>Campos presentes no arquivo de dados que não estão nos blocos do scorecard.</p>
+          </div>
+          <div className="dictionary-list">
+            {extraIndicators.map((indicator) => dictionaryRow(indicator, "Campo complementar"))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

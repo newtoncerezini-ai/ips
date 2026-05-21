@@ -654,36 +654,209 @@ td {
 
 .dictionary-hero {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
 }
 
-.dictionary-actions {
+.dictionary-search {
+  width: min(460px, 100%);
+  min-height: 44px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  align-items: center;
   gap: 10px;
+  margin-top: 18px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #f8fafc;
 }
 
-.dictionary-actions a {
-  text-decoration: none;
+.dictionary-search svg {
+  color: #55708d;
 }
 
-.dictionary-viewer {
-  height: calc(100vh - 240px);
-  min-height: 640px;
-  overflow: hidden;
+.dictionary-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #0f172a;
+  font: inherit;
+}
+
+.dictionary-note {
+  max-width: 320px;
+  padding: 14px 16px;
+  border-left: 4px solid #006591;
+  border-radius: 5px;
+  background: #e1f0f6;
+}
+
+.dictionary-note strong,
+.dictionary-note span {
+  display: block;
+}
+
+.dictionary-note strong {
+  color: #006591;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dictionary-note span {
+  margin-top: 4px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.dictionary-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dictionary-summary-grid article {
+  padding: 18px;
+  border: 1px solid #d8e1ea;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.dictionary-summary-grid span,
+.dictionary-section-title p,
+.dictionary-item span,
+.dictionary-item em,
+.dictionary-component-card header span {
+  color: #5f6b7a;
+}
+
+.dictionary-summary-grid span,
+.dictionary-component-card header span {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.dictionary-summary-grid strong {
+  display: block;
+  margin-top: 8px;
+  color: #006591;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.dictionary-summary-grid p {
+  margin: 8px 0 0;
+  color: #334155;
+}
+
+.dictionary-section {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
   border: 1px solid #d8e1ea;
   border-radius: 8px;
   background: #fff;
 }
 
-.dictionary-viewer iframe {
-  width: 100%;
-  height: 100%;
+.dictionary-section-title {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5edf3;
+}
+
+.dictionary-section-title h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.dictionary-section-title p {
+  max-width: 520px;
+  margin: 0;
+  text-align: right;
+}
+
+.dictionary-component-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dictionary-component-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.dictionary-component-card header {
+  padding: 14px 16px;
+  background: #e8edf3;
+}
+
+.dictionary-component-card header strong {
   display: block;
-  border: 0;
+  margin-top: 4px;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.dictionary-list {
+  display: grid;
+  gap: 8px;
+}
+
+.dictionary-list.compact {
+  padding: 12px;
+}
+
+.dictionary-item {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(120px, auto) minmax(180px, auto);
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #e5edf3;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.dictionary-item strong,
+.dictionary-item span {
+  display: block;
+}
+
+.dictionary-item strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.dictionary-item span,
+.dictionary-item em {
+  font-size: 12px;
+}
+
+.dictionary-item p {
+  margin: 0;
+  justify-self: start;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #e1f0f6;
+  color: #006591;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.dictionary-item em {
+  justify-self: end;
+  font-style: normal;
 }
 
 .map-score {
@@ -1255,6 +1428,8 @@ td {
   .scorecard-summary,
   .dimension-card-grid,
   .dictionary-hero,
+  .dictionary-summary-grid,
+  .dictionary-component-grid,
   .chart-controls,
   .chart-controls.two {
     grid-template-columns: 1fr;
@@ -1307,12 +1482,20 @@ td {
     display: grid;
   }
 
-  .dictionary-actions {
-    justify-content: flex-start;
+  .dictionary-section-title {
+    display: grid;
   }
 
-  .dictionary-viewer {
-    min-height: 520px;
+  .dictionary-section-title p {
+    text-align: left;
+  }
+
+  .dictionary-item {
+    grid-template-columns: 1fr;
+  }
+
+  .dictionary-item em {
+    justify-self: start;
   }
 }
 
