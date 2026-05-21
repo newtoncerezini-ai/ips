@@ -114,6 +114,71 @@ const LOWER_IS_BETTER = new Set([
   "Violência Contra Negros",
 ]);
 
+
+const INDICATOR_DESCRIPTIONS: Record<string, string> = {
+  [IPS]: "?ndice sint?tico que resume o desempenho social do munic?pio nas dimens?es de necessidades humanas b?sicas, fundamentos do bem-estar e oportunidades.",
+  [GDP]: "Valor do Produto Interno Bruto municipal dividido pela popula??o, usado como medida de contexto econ?mico.",
+  "Popula??o": "Estimativa ou contagem populacional usada para contextualizar porte municipal e indicadores per capita.",
+  "?rea (km?)": "Extens?o territorial do munic?pio em quil?metros quadrados.",
+  "Cobertura Vacinal (poliomielite)": "Percentual de cobertura da vacina??o contra poliomielite na popula??o-alvo.",
+  "Hospitaliza??es por Condi??es Sens?veis ? Aten??o Prim?ria": "Taxa de interna??es por condi??es que, em geral, poderiam ser evitadas ou reduzidas com aten??o prim?ria efetiva.",
+  "Mortalidade Ajustada por Condi??es Sens?veis ? Aten??o Prim?ria": "Taxa ajustada de ?bitos por causas sens?veis ? aten??o prim?ria, permitindo compara??o entre munic?pios.",
+  "Mortalidade Infantil at? 5 anos": "?bitos de crian?as at? 5 anos em rela??o aos nascidos vivos ou popula??o de refer?ncia infantil.",
+  "Subnutri??o": "Indicador relacionado ? ocorr?ncia de subnutri??o ou baixo peso na popula??o monitorada.",
+  "Abastecimento de ?gua Via Rede de Distribui??o": "Percentual de domic?lios atendidos por rede geral de abastecimento de ?gua.",
+  "Esgotamento Sanit?rio Adequado": "Percentual de domic?lios com forma adequada de esgotamento sanit?rio.",
+  "?ndice de Abastecimento de ?gua": "Indicador sint?tico de desempenho do servi?o de abastecimento de ?gua.",
+  "?ndice de Perdas de ?gua na Distribui??o": "Percentual ou ?ndice de perdas no sistema de distribui??o de ?gua tratada.",
+  "Domic?lios com Coleta de Res?duos Adequada": "Percentual de domic?lios com coleta de res?duos considerada adequada.",
+  "Domic?lios com Ilumina??o El?trica Adequada": "Percentual de domic?lios com acesso adequado ? ilumina??o el?trica.",
+  "Domic?lios com Paredes Adequadas": "Percentual de domic?lios com material adequado nas paredes externas.",
+  "Domic?lios com Pisos Adequados": "Percentual de domic?lios com material adequado no piso.",
+  "Assassinatos de Jovens": "Taxa ou ocorr?ncia relativa de homic?dios contra a popula??o jovem.",
+  "Assassinatos de Mulheres": "Taxa ou ocorr?ncia relativa de homic?dios contra mulheres.",
+  "Homic?dios": "Taxa ou ocorr?ncia relativa de homic?dios no munic?pio.",
+  "Mortes por Acidentes de Transporte": "Taxa ou ocorr?ncia relativa de ?bitos decorrentes de acidentes de transporte.",
+  "Abandono no Ensino Fundamental": "Percentual de estudantes que abandonam o ensino fundamental.",
+  "Abandono no Ensino M?dio": "Percentual de estudantes que abandonam o ensino m?dio.",
+  "Distor??o Idade-S?rie no Ensino M?dio": "Percentual de estudantes do ensino m?dio com atraso escolar em rela??o ? idade esperada para a s?rie.",
+  "Evas?o no Ensino M?dio": "Percentual de estudantes que deixam de frequentar ou concluem trajet?rias interrompidas no ensino m?dio.",
+  "Ideb Ensino Fundamental": "?ndice de Desenvolvimento da Educa??o B?sica para o ensino fundamental.",
+  "Reprova??o Escolar no Ensino M?dio": "Percentual de estudantes reprovados no ensino m?dio.",
+  "Cobertura de Internet M?vel (4G/5G)": "Percentual ou n?vel de cobertura territorial/populacional por redes m?veis 4G e 5G.",
+  "Densidade de Internet Banda Larga Fixa": "Quantidade relativa de acessos de banda larga fixa em rela??o ? popula??o ou domic?lios.",
+  "Densidade Telefonia M?vel": "Quantidade relativa de acessos de telefonia m?vel em rela??o ? popula??o.",
+  "Qualidade de Internet M?vel": "Medida de qualidade da conex?o m?vel observada no munic?pio.",
+  "Consumo de ultraprocessados": "Indicador associado ao consumo de alimentos ultraprocessados pela popula??o monitorada.",
+  "Expectativa de Vida": "N?mero m?dio esperado de anos de vida ao nascer ou estimativa equivalente de longevidade.",
+  "Mortalidade entre 15 e 50 anos": "Taxa de mortalidade da popula??o entre 15 e 50 anos.",
+  "Mortalidades por Doen?as Cr?nicas N?o Transmiss?veis": "Taxa de ?bitos por doen?as cr?nicas n?o transmiss?veis.",
+  "Obesidade": "Indicador de preval?ncia de obesidade na popula??o monitorada.",
+  "Suic?dios": "Taxa ou ocorr?ncia relativa de ?bitos por suic?dio.",
+  "?reas Verdes Urbanas": "Disponibilidade relativa de ?reas verdes em zonas urbanas do munic?pio.",
+  "Emiss?es de CO?e por Habitante": "Emiss?es de gases de efeito estufa em CO? equivalente divididas pela popula??o.",
+  "Focos de Calor": "Ocorr?ncia relativa de focos de calor detectados no territ?rio municipal.",
+  "?ndice de Vulnerabilidade Clim?tica dos Munic?pios (IVCM)": "Indicador sint?tico de exposi??o ou vulnerabilidade municipal a riscos clim?ticos.",
+  "Supress?o da Vegeta??o Prim?ria e Secund?ria": "Medida de perda ou supress?o de vegeta??o nativa no territ?rio municipal.",
+  "Acesso a Programas de Direitos Humanos": "Indicador de disponibilidade ou ades?o a programas relacionados ? promo??o de direitos humanos.",
+  "Exist?ncia de A??es para Direitos de Minorias": "Registra a exist?ncia de a??es municipais voltadas ? prote??o e promo??o de direitos de grupos minorit?rios.",
+  "?ndice de Atendimento ? Demanda de Justi?a": "Rela??o entre atendimentos ou respostas do sistema de justi?a e a demanda observada.",
+  "Resposta a Processos Previdenci?rios": "Indicador de resposta ou tramita??o de processos previdenci?rios.",
+  "Resposta a Processos Familiares": "Indicador de resposta ou tramita??o de processos relacionados ao direito de fam?lia.",
+  "Taxa de Congestionamento L?quida de Processos": "Percentual de processos que permanecem pendentes ap?s descontadas situa??es espec?ficas de suspens?o ou baixa.",
+  "Acesso ? Cultura, Lazer e Esporte": "Indicador de oferta ou acesso a equipamentos, programas e a??es de cultura, lazer e esporte.",
+  "Gravidez na Adolesc?ncia (<19)": "Propor??o de nascimentos de m?es adolescentes com menos de 19 anos.",
+  "?ndice de Vulnerabilidade das Fam?lias do Cad?nico (IVCAD)": "Indicador sint?tico de vulnerabilidade das fam?lias registradas no Cadastro ?nico.",
+  "Pra?as e Parques em ?reas Urbanas": "Disponibilidade relativa de pra?as e parques em ?reas urbanas.",
+  "Fam?lias em Situa??o de Rua": "Registro relativo de fam?lias em situa??o de rua no munic?pio.",
+  "Paridade de G?nero na C?mara Municipal": "Grau de equil?brio entre mulheres e homens na composi??o da C?mara Municipal.",
+  "Paridade de Negros na C?mara Municipal": "Grau de representa??o de pessoas negras na C?mara Municipal em rela??o ao par?metro de refer?ncia.",
+  "Viol?ncia Contra Ind?genas": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra pessoas ind?genas.",
+  "Viol?ncia Contra Mulheres": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra mulheres.",
+  "Viol?ncia Contra Negros": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra pessoas negras.",
+  "Empregados com Ensino Superior": "Participa??o ou densidade de v?nculos formais ocupados por pessoas com ensino superior.",
+  "Mulheres Empregadas com Ensino Superior": "Participa??o ou densidade de v?nculos formais de mulheres com ensino superior.",
+  "Nota Mediana no Enem": "Nota mediana obtida no Enem pelos estudantes vinculados ao munic?pio.",
+};
+
 const SCORECARD_GROUPS = [
   {
     dimension: "Necessidades Humanas Básicas",
@@ -707,7 +772,11 @@ function DataDictionary({ data }: { data: DashboardData }) {
   const latestRows = data.records.filter((row) => row.year === 2026);
   const described = new Set([IPS, GDP, "População", "Área (km²)", ...data.dimensions, ...data.components, ...SCORECARD_GROUPS.flatMap((group) => group.components.flatMap((component) => component.indicators))]);
   const extraIndicators = data.indicators.filter((indicator) => !described.has(indicator));
-  const visible = (name: string) => !lowerQuery || name.toLocaleLowerCase("pt-BR").includes(lowerQuery);
+  const indicatorDescription = (indicator: string) => INDICATOR_DESCRIPTIONS[indicator] ?? "Campo numérico presente na base de dados do IPS Pernambuco.";
+  const visible = (name: string) => {
+    const haystack = `${name} ${indicatorDescription(name)}`.toLocaleLowerCase("pt-BR");
+    return !lowerQuery || haystack.includes(lowerQuery);
+  };
   const coverage = (indicator: string) => latestRows.filter((row) => getValue(row, indicator) != null).length;
   const polarityLabel = (indicator: string) => (isLowerBetter(indicator) ? "Menor é melhor" : "Maior é melhor");
   const dictionaryRow = (indicator: string, type: string) => {
@@ -717,6 +786,7 @@ function DataDictionary({ data }: { data: DashboardData }) {
         <div>
           <strong>{indicator}</strong>
           <span>{type}</span>
+          <small>{indicatorDescription(indicator)}</small>
         </div>
         <p>{polarityLabel(indicator)}</p>
         <em>{coverage(indicator)}/{latestRows.length} municípios com dado em 2026</em>

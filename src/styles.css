@@ -819,9 +819,9 @@ td {
 
 .dictionary-item {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(120px, auto) minmax(180px, auto);
+  grid-template-columns: minmax(360px, 1fr) minmax(120px, auto) minmax(180px, auto);
   gap: 14px;
-  align-items: center;
+  align-items: start;
   padding: 12px 14px;
   border: 1px solid #e5edf3;
   border-radius: 5px;
@@ -829,7 +829,8 @@ td {
 }
 
 .dictionary-item strong,
-.dictionary-item span {
+.dictionary-item span,
+.dictionary-item small {
   display: block;
 }
 
@@ -841,6 +842,14 @@ td {
 .dictionary-item span,
 .dictionary-item em {
   font-size: 12px;
+}
+
+.dictionary-item small {
+  max-width: 780px;
+  margin-top: 8px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .dictionary-item p {
