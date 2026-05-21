@@ -39,6 +39,38 @@ COMPONENTS = [
     "Acesso à Educação Superior",
 ]
 
+LOWER_IS_BETTER = {
+    "Hospitaliza\u00e7\u00f5es por Condi\u00e7\u00f5es Sens\u00edveis \u00e0 Aten\u00e7\u00e3o Prim\u00e1ria",
+    "Mortalidade Ajustada por Condi\u00e7\u00f5es Sens\u00edveis \u00e0 Aten\u00e7\u00e3o Prim\u00e1ria",
+    "Mortalidade Infantil at\u00e9 5 anos",
+    "Subnutri\u00e7\u00e3o",
+    "\u00cdndice de Perdas de \u00c1gua na Distribui\u00e7\u00e3o",
+    "Assassinatos de Jovens",
+    "Assassinatos de Mulheres",
+    "Homic\u00eddios",
+    "Mortes por Acidentes de Transporte",
+    "Abandono no Ensino Fundamental",
+    "Abandono no Ensino M\u00e9dio",
+    "Distor\u00e7\u00e3o Idade-S\u00e9rie no Ensino M\u00e9dio",
+    "Evas\u00e3o no Ensino M\u00e9dio",
+    "Reprova\u00e7\u00e3o Escolar no Ensino M\u00e9dio",
+    "Consumo de ultraprocessados",
+    "Mortalidade entre 15 e 50 anos",
+    "Mortalidades por Doen\u00e7as Cr\u00f4nicas N\u00e3o Transmiss\u00edveis",
+    "Obesidade",
+    "Suic\u00eddios",
+    "Emiss\u00f5es de CO\u2082e por Habitante",
+    "Focos de Calor",
+    "\u00cdndice de Vulnerabilidade Clim\u00e1tica dos Munic\u00edpios (IVCM)",
+    "Supress\u00e3o da Vegeta\u00e7\u00e3o Prim\u00e1ria e Secund\u00e1ria",
+    "Taxa de Congestionamento L\u00edquida de Processos",
+    "Gravidez na Adolesc\u00eancia (<19)",
+    "\u00cdndice de Vulnerabilidade das Fam\u00edlias do Cad\u00danico (IVCAD)",
+    "Fam\u00edlias em Situa\u00e7\u00e3o de Rua",
+    "Viol\u00eancia Contra Ind\u00edgenas",
+    "Viol\u00eancia Contra Mulheres",
+    "Viol\u00eancia Contra Negros",
+}
 ALIASES = {
     "ÁREA km²": "Área (km²)",
     "POPULAÇÃO 2025": "População",
@@ -205,7 +237,7 @@ def rank_map(rows, indicators):
     ranks = {}
     for indicator in indicators:
         valid = [row for row in rows if row["values"].get(indicator) is not None]
-        valid.sort(key=lambda row: row["values"][indicator], reverse=True)
+        valid.sort(key=lambda row: row["values"][indicator], reverse=indicator not in LOWER_IS_BETTER)
         for index, row in enumerate(valid, start=1):
             ranks.setdefault(row["code"], {})[indicator] = {"position": index, "total": len(valid)}
     return ranks
@@ -228,7 +260,7 @@ def attach_ranks(records):
             ranks = {}
             for indicator in ranked_indicators:
                 valid = [row for row in rows if row["values"].get(indicator) is not None]
-                valid.sort(key=lambda row: row["values"][indicator], reverse=True)
+                valid.sort(key=lambda row: row["values"][indicator], reverse=indicator not in LOWER_IS_BETTER)
                 for index, row in enumerate(valid, start=1):
                     if row["uf"] == "PE":
                         key = municipality_key(row["municipality"])
@@ -341,6 +373,7 @@ def main():
         "records": records,
         "regions": sorted({row["region"] for row in records}),
         "indicators": indicators,
+        "indicatorPolarity": {indicator: ("lower" if indicator in LOWER_IS_BETTER else "higher") for indicator in indicators},
         "dimensions": DIMENSIONS,
         "components": COMPONENTS,
         "map": build_svg_paths(by_code),

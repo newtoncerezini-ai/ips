@@ -56,6 +56,7 @@ type DashboardData = {
   records: RecordRow[];
   regions: string[];
   indicators: string[];
+  indicatorPolarity?: Record<string, "higher" | "lower">;
   dimensions: string[];
   components: string[];
   map: {
@@ -79,6 +80,38 @@ const CORE = [
   "Fundamentos do Bem-estar",
   "Oportunidades",
 ];
+const LOWER_IS_BETTER = new Set([
+  "Hospitalizações por Condições Sensíveis à Atenção Primária",
+  "Mortalidade Ajustada por Condições Sensíveis à Atenção Primária",
+  "Mortalidade Infantil até 5 anos",
+  "Subnutrição",
+  "Índice de Perdas de Água na Distribuição",
+  "Assassinatos de Jovens",
+  "Assassinatos de Mulheres",
+  "Homicídios",
+  "Mortes por Acidentes de Transporte",
+  "Abandono no Ensino Fundamental",
+  "Abandono no Ensino Médio",
+  "Distorção Idade-Série no Ensino Médio",
+  "Evasão no Ensino Médio",
+  "Reprovação Escolar no Ensino Médio",
+  "Consumo de ultraprocessados",
+  "Mortalidade entre 15 e 50 anos",
+  "Mortalidades por Doenças Crônicas Não Transmissíveis",
+  "Obesidade",
+  "Suicídios",
+  "Emissões de CO₂e por Habitante",
+  "Focos de Calor",
+  "Índice de Vulnerabilidade Climática dos Municípios (IVCM)",
+  "Supressão da Vegetação Primária e Secundária",
+  "Taxa de Congestionamento Líquida de Processos",
+  "Gravidez na Adolescência (<19)",
+  "Índice de Vulnerabilidade das Famílias do CadÚnico (IVCAD)",
+  "Famílias em Situação de Rua",
+  "Violência Contra Indígenas",
+  "Violência Contra Mulheres",
+  "Violência Contra Negros",
+]);
 
 const SCORECARD_GROUPS = [
   {
@@ -224,8 +257,17 @@ function average(rows: RecordRow[], indicator: string) {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
+function isLowerBetter(indicator: string) {
+  return LOWER_IS_BETTER.has(indicator);
+}
+
 function rankRows(rows: RecordRow[], indicator: string) {
-  return [...rows].sort((a, b) => (getValue(b, indicator) ?? -Infinity) - (getValue(a, indicator) ?? -Infinity));
+  const emptyValue = isLowerBetter(indicator) ? Infinity : -Infinity;
+  return [...rows].sort((a, b) => {
+    const av = getValue(a, indicator) ?? emptyValue;
+    const bv = getValue(b, indicator) ?? emptyValue;
+    return isLowerBetter(indicator) ? av - bv : bv - av;
+  });
 }
 
 function classify(score: number | null) {
@@ -248,15 +290,16 @@ function mapBreaks(rows: RecordRow[], indicator: string) {
   const values = rows
     .map((row) => getValue(row, indicator))
     .filter((value): value is number => typeof value === "number")
-    .sort((a, b) => b - a);
+    .sort((a, b) => (isLowerBetter(indicator) ? a - b : b - a));
   if (!values.length) return [];
   return MAP_PALETTE.map((_, index) => {
     const start = Math.floor((index * values.length) / MAP_PALETTE.length);
     const end = Math.max(start, Math.floor(((index + 1) * values.length) / MAP_PALETTE.length) - 1);
+    const chunk = values.slice(start, Math.min(end + 1, values.length));
     return {
       color: MAP_PALETTE[index],
-      max: values[start],
-      min: values[Math.min(end, values.length - 1)],
+      max: Math.max(...chunk),
+      min: Math.min(...chunk),
     };
   });
 }
@@ -449,6 +492,8 @@ function Overview({ rows, allRecords, year, indicator, setView, setSelectedCode 
   const mean = average(rows, indicator);
   const previous = year > 2024 ? average(allRecords.filter((row) => row.year === year - 1), indicator) : null;
   const delta = mean != null && previous != null ? mean - previous : null;
+  const lowerBetter = isLowerBetter(indicator);
+  const deltaIsGood = delta == null ? null : lowerBetter ? delta <= 0 : delta >= 0;
   const regionData = Object.values(
     rows.reduce<Record<string, { region: string; value: number; count: number }>>((acc, row) => {
       const value = getValue(row, indicator);
@@ -460,14 +505,14 @@ function Overview({ rows, allRecords, year, indicator, setView, setSelectedCode 
     }, {}),
   )
     .map((item) => ({ region: item.region, média: Number((item.value / item.count).toFixed(2)) }))
-    .sort((a, b) => b.média - a.média);
+    .sort((a, b) => (lowerBetter ? a.média - b.média : b.média - a.média));
 
   return (
     <div className="page-stack">
       <div className="metric-grid">
-        <MetricCard label="Média estadual" value={formatNumber(mean)} foot={delta == null ? "Sem comparação anterior" : `${delta >= 0 ? "+" : ""}${formatNumber(delta)} ponto vs ano anterior`} tone={delta == null ? "muted" : delta >= 0 ? "good" : "bad"} />
-        <MetricCard label="Município de maior pontuação" value={top?.municipality ?? "-"} foot={`${formatNumber(getValue(top, indicator))} pontos`} />
-        <MetricCard label="Município de menor pontuação" value={bottom?.municipality ?? "-"} foot={`${formatNumber(getValue(bottom, indicator))} pontos`} tone="bad" />
+        <MetricCard label="Média estadual" value={formatNumber(mean)} foot={delta == null ? "Sem comparação anterior" : `${delta >= 0 ? "+" : ""}${formatNumber(delta)} ponto vs ano anterior`} tone={deltaIsGood == null ? "muted" : deltaIsGood ? "good" : "bad"} />
+        <MetricCard label="Município com melhor resultado" value={top?.municipality ?? "-"} foot={`${formatNumber(getValue(top, indicator))} pontos`} />
+        <MetricCard label="Município com pior resultado" value={bottom?.municipality ?? "-"} foot={`${formatNumber(getValue(bottom, indicator))} pontos`} tone="bad" />
       </div>
 
       <div className="content-grid">
