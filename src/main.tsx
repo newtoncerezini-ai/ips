@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BarChart3,
+  BookOpenText,
   ChevronDown,
   Download,
+  ExternalLink,
   LayoutDashboard,
   Map as MapIcon,
   Search,
@@ -66,7 +68,7 @@ type DashboardData = {
   sourceNote: string;
 };
 
-type View = "overview" | "ranking" | "map" | "scorecard" | "charts";
+type View = "overview" | "ranking" | "map" | "scorecard" | "charts" | "dictionary";
 type ChartTab = "radar" | "regression" | "temporal";
 
 const YEARS = [2026, 2025, 2024];
@@ -326,6 +328,16 @@ function rankTone(ranks?: { pe?: RankInfo | null }) {
   return "red";
 }
 
+function rankLegend(total = 185) {
+  const greenEnd = Math.floor(total / 3);
+  const yellowEnd = Math.floor((total * 2) / 3);
+  return {
+    green: `1º a ${greenEnd}º`,
+    yellow: `${greenEnd + 1}º a ${yellowEnd}º`,
+    red: `${yellowEnd + 1}º a ${total}º`,
+  };
+}
+
 function App() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [view, setView] = useState<View>("overview");
@@ -376,6 +388,7 @@ function App() {
           <NavButton active={view === "map"} icon={<MapIcon size={20} />} label="Mapa" onClick={() => setView("map")} />
           <NavButton active={view === "scorecard"} icon={<SlidersHorizontal size={20} />} label="Scorecard" onClick={() => setView("scorecard")} />
           <NavButton active={view === "charts"} icon={<BarChart3 size={20} />} label="Gráficos" onClick={() => setView("charts")} />
+          <NavButton active={view === "dictionary"} icon={<BookOpenText size={20} />} label="Dicionário" onClick={() => setView("dictionary")} />
         </nav>
         <div className="sidebar-note">
           <span>Fonte</span>
@@ -416,6 +429,7 @@ function App() {
         {view === "map" && <MapView data={data} rows={allYearRows} year={year} setYear={setYear} indicator={indicator} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "scorecard" && <Scorecard data={data} selected={selected} year={year} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "charts" && <ChartsPage data={data} year={year} tab={chartTab} setTab={setChartTab} />}
+        {view === "dictionary" && <DataDictionary />}
       </main>
     </div>
   );
@@ -482,6 +496,7 @@ function titleFor(view: View) {
     map: "Mapa Social do IPS",
     scorecard: "Scorecard Municipal",
     charts: "Gráficos",
+    dictionary: "Dicionário de Dados",
   }[view];
 }
 
@@ -687,6 +702,33 @@ function MapView({ data, rows, year, setYear, indicator, selectedCode, setSelect
   );
 }
 
+function DataDictionary() {
+  const pdfPath = "/assets/dicionario-de-dados.pdf";
+  return (
+    <div className="dictionary-page">
+      <section className="panel dictionary-hero">
+        <div>
+          <PanelTitle title="Dicionário de dados" subtitle="Documento metodológico com a descrição dos campos, indicadores e referências utilizados no painel." />
+        </div>
+        <div className="dictionary-actions">
+          <a className="button ghost" href={pdfPath} target="_blank" rel="noreferrer">
+            <ExternalLink size={17} />
+            Abrir PDF
+          </a>
+          <a className="button" href={pdfPath} download>
+            <Download size={17} />
+            Baixar
+          </a>
+        </div>
+      </section>
+
+      <section className="dictionary-viewer">
+        <iframe title="Dicionário de dados do IPS Pernambuco" src={`${pdfPath}#toolbar=1&navpanes=0&view=FitH`} />
+      </section>
+    </div>
+  );
+}
+
 function Scorecard({ data, selected, year, selectedCode, setSelectedCode }: { data: DashboardData; selected?: RecordRow; year: number; selectedCode: string; setSelectedCode: (code: string) => void }) {
   const municipalityRows = data.records.filter((row) => row.code === selectedCode).sort((a, b) => a.year - b.year);
   const municipalities = data.records
@@ -698,6 +740,7 @@ function Scorecard({ data, selected, year, selectedCode, setSelectedCode }: { da
   const lineData = municipalityRows.map((row) => ({ year: row.year, IPS: getValue(row, IPS) }));
   const ipsRanks = selected.ranks?.[IPS] ?? {};
   const gdpRanks = selected.ranks?.["PIB per capita"] ?? {};
+  const legend = rankLegend(ipsRanks.pe?.total ?? 185);
 
   return (
     <div className="scorecard-page">
@@ -720,6 +763,16 @@ function Scorecard({ data, selected, year, selectedCode, setSelectedCode }: { da
             <MiniKpi icon={<LandPlot size={28} />} title="Área" value={formatNumber(getValue(selected, "Área (km²)"))} detail="km²" />
           </div>
         </div>
+      </section>
+
+      <section className="rank-legend-card">
+        <div>
+          <strong>Legenda de cores</strong>
+          <span>Ranking em Pernambuco. A cor sempre considera a polaridade do indicador.</span>
+        </div>
+        <p><i className="status-dot green" /> Verde: {legend.green}</p>
+        <p><i className="status-dot yellow" /> Amarelo: {legend.yellow}</p>
+        <p><i className="status-dot red" /> Vermelho: {legend.red}</p>
       </section>
 
       <div className="scorecard-summary">

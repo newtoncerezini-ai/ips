@@ -647,6 +647,45 @@ td {
   line-height: 1;
 }
 
+.dictionary-page {
+  display: grid;
+  gap: 18px;
+}
+
+.dictionary-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.dictionary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dictionary-actions a {
+  text-decoration: none;
+}
+
+.dictionary-viewer {
+  height: calc(100vh - 240px);
+  min-height: 640px;
+  overflow: hidden;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.dictionary-viewer iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+
 .map-score {
   padding: 20px;
   border-radius: 6px;
@@ -910,6 +949,50 @@ td {
   background: #cbd5e1;
 }
 
+.rank-legend-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 14px 18px;
+  border: 1px solid #d8e1ea;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rank-legend-card div {
+  min-width: 260px;
+  flex: 1;
+}
+
+.rank-legend-card strong,
+.rank-legend-card span {
+  display: block;
+}
+
+.rank-legend-card strong {
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.rank-legend-card span {
+  margin-top: 3px;
+  color: #5f6b7a;
+  font-size: 13px;
+}
+
+.rank-legend-card p {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .mini-kpis {
   display: grid;
   gap: 8px;
@@ -1171,6 +1254,7 @@ td {
   .scorecard-kpis,
   .scorecard-summary,
   .dimension-card-grid,
+  .dictionary-hero,
   .chart-controls,
   .chart-controls.two {
     grid-template-columns: 1fr;
@@ -1217,6 +1301,18 @@ td {
 
   .mini-kpi p {
     grid-column: 1 / -1;
+  }
+
+  .dictionary-hero {
+    display: grid;
+  }
+
+  .dictionary-actions {
+    justify-content: flex-start;
+  }
+
+  .dictionary-viewer {
+    min-height: 520px;
   }
 }
 
