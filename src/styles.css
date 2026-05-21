@@ -819,7 +819,7 @@ td {
 
 .dictionary-item {
   display: grid;
-  grid-template-columns: minmax(360px, 1fr) minmax(120px, auto) minmax(180px, auto);
+  grid-template-columns: minmax(320px, 1.1fr) minmax(260px, .9fr) minmax(120px, auto) minmax(180px, auto);
   gap: 14px;
   align-items: start;
   padding: 12px 14px;
@@ -850,6 +850,36 @@ td {
   color: #475569;
   font-size: 13px;
   line-height: 1.45;
+}
+
+.dictionary-item dl {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.dictionary-item dl div {
+  display: grid;
+  gap: 2px;
+}
+
+.dictionary-item dt,
+.dictionary-item dd {
+  margin: 0;
+}
+
+.dictionary-item dt {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.dictionary-item dd {
+  color: #0f172a;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .dictionary-item p {

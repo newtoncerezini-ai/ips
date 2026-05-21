@@ -115,68 +115,72 @@ const LOWER_IS_BETTER = new Set([
 ]);
 
 
-const INDICATOR_DESCRIPTIONS: Record<string, string> = {
-  [IPS]: "?ndice sint?tico que resume o desempenho social do munic?pio nas dimens?es de necessidades humanas b?sicas, fundamentos do bem-estar e oportunidades.",
-  [GDP]: "Valor do Produto Interno Bruto municipal dividido pela popula??o, usado como medida de contexto econ?mico.",
-  "Popula??o": "Estimativa ou contagem populacional usada para contextualizar porte municipal e indicadores per capita.",
-  "?rea (km?)": "Extens?o territorial do munic?pio em quil?metros quadrados.",
-  "Cobertura Vacinal (poliomielite)": "Percentual de cobertura da vacina??o contra poliomielite na popula??o-alvo.",
-  "Hospitaliza??es por Condi??es Sens?veis ? Aten??o Prim?ria": "Taxa de interna??es por condi??es que, em geral, poderiam ser evitadas ou reduzidas com aten??o prim?ria efetiva.",
-  "Mortalidade Ajustada por Condi??es Sens?veis ? Aten??o Prim?ria": "Taxa ajustada de ?bitos por causas sens?veis ? aten??o prim?ria, permitindo compara??o entre munic?pios.",
-  "Mortalidade Infantil at? 5 anos": "?bitos de crian?as at? 5 anos em rela??o aos nascidos vivos ou popula??o de refer?ncia infantil.",
-  "Subnutri??o": "Indicador relacionado ? ocorr?ncia de subnutri??o ou baixo peso na popula??o monitorada.",
-  "Abastecimento de ?gua Via Rede de Distribui??o": "Percentual de domic?lios atendidos por rede geral de abastecimento de ?gua.",
-  "Esgotamento Sanit?rio Adequado": "Percentual de domic?lios com forma adequada de esgotamento sanit?rio.",
-  "?ndice de Abastecimento de ?gua": "Indicador sint?tico de desempenho do servi?o de abastecimento de ?gua.",
-  "?ndice de Perdas de ?gua na Distribui??o": "Percentual ou ?ndice de perdas no sistema de distribui??o de ?gua tratada.",
-  "Domic?lios com Coleta de Res?duos Adequada": "Percentual de domic?lios com coleta de res?duos considerada adequada.",
-  "Domic?lios com Ilumina??o El?trica Adequada": "Percentual de domic?lios com acesso adequado ? ilumina??o el?trica.",
-  "Domic?lios com Paredes Adequadas": "Percentual de domic?lios com material adequado nas paredes externas.",
-  "Domic?lios com Pisos Adequados": "Percentual de domic?lios com material adequado no piso.",
-  "Assassinatos de Jovens": "Taxa ou ocorr?ncia relativa de homic?dios contra a popula??o jovem.",
-  "Assassinatos de Mulheres": "Taxa ou ocorr?ncia relativa de homic?dios contra mulheres.",
-  "Homic?dios": "Taxa ou ocorr?ncia relativa de homic?dios no munic?pio.",
-  "Mortes por Acidentes de Transporte": "Taxa ou ocorr?ncia relativa de ?bitos decorrentes de acidentes de transporte.",
-  "Abandono no Ensino Fundamental": "Percentual de estudantes que abandonam o ensino fundamental.",
-  "Abandono no Ensino M?dio": "Percentual de estudantes que abandonam o ensino m?dio.",
-  "Distor??o Idade-S?rie no Ensino M?dio": "Percentual de estudantes do ensino m?dio com atraso escolar em rela??o ? idade esperada para a s?rie.",
-  "Evas?o no Ensino M?dio": "Percentual de estudantes que deixam de frequentar ou concluem trajet?rias interrompidas no ensino m?dio.",
-  "Ideb Ensino Fundamental": "?ndice de Desenvolvimento da Educa??o B?sica para o ensino fundamental.",
-  "Reprova??o Escolar no Ensino M?dio": "Percentual de estudantes reprovados no ensino m?dio.",
-  "Cobertura de Internet M?vel (4G/5G)": "Percentual ou n?vel de cobertura territorial/populacional por redes m?veis 4G e 5G.",
-  "Densidade de Internet Banda Larga Fixa": "Quantidade relativa de acessos de banda larga fixa em rela??o ? popula??o ou domic?lios.",
-  "Densidade Telefonia M?vel": "Quantidade relativa de acessos de telefonia m?vel em rela??o ? popula??o.",
-  "Qualidade de Internet M?vel": "Medida de qualidade da conex?o m?vel observada no munic?pio.",
-  "Consumo de ultraprocessados": "Indicador associado ao consumo de alimentos ultraprocessados pela popula??o monitorada.",
-  "Expectativa de Vida": "N?mero m?dio esperado de anos de vida ao nascer ou estimativa equivalente de longevidade.",
-  "Mortalidade entre 15 e 50 anos": "Taxa de mortalidade da popula??o entre 15 e 50 anos.",
-  "Mortalidades por Doen?as Cr?nicas N?o Transmiss?veis": "Taxa de ?bitos por doen?as cr?nicas n?o transmiss?veis.",
-  "Obesidade": "Indicador de preval?ncia de obesidade na popula??o monitorada.",
-  "Suic?dios": "Taxa ou ocorr?ncia relativa de ?bitos por suic?dio.",
-  "?reas Verdes Urbanas": "Disponibilidade relativa de ?reas verdes em zonas urbanas do munic?pio.",
-  "Emiss?es de CO?e por Habitante": "Emiss?es de gases de efeito estufa em CO? equivalente divididas pela popula??o.",
-  "Focos de Calor": "Ocorr?ncia relativa de focos de calor detectados no territ?rio municipal.",
-  "?ndice de Vulnerabilidade Clim?tica dos Munic?pios (IVCM)": "Indicador sint?tico de exposi??o ou vulnerabilidade municipal a riscos clim?ticos.",
-  "Supress?o da Vegeta??o Prim?ria e Secund?ria": "Medida de perda ou supress?o de vegeta??o nativa no territ?rio municipal.",
-  "Acesso a Programas de Direitos Humanos": "Indicador de disponibilidade ou ades?o a programas relacionados ? promo??o de direitos humanos.",
-  "Exist?ncia de A??es para Direitos de Minorias": "Registra a exist?ncia de a??es municipais voltadas ? prote??o e promo??o de direitos de grupos minorit?rios.",
-  "?ndice de Atendimento ? Demanda de Justi?a": "Rela??o entre atendimentos ou respostas do sistema de justi?a e a demanda observada.",
-  "Resposta a Processos Previdenci?rios": "Indicador de resposta ou tramita??o de processos previdenci?rios.",
-  "Resposta a Processos Familiares": "Indicador de resposta ou tramita??o de processos relacionados ao direito de fam?lia.",
-  "Taxa de Congestionamento L?quida de Processos": "Percentual de processos que permanecem pendentes ap?s descontadas situa??es espec?ficas de suspens?o ou baixa.",
-  "Acesso ? Cultura, Lazer e Esporte": "Indicador de oferta ou acesso a equipamentos, programas e a??es de cultura, lazer e esporte.",
-  "Gravidez na Adolesc?ncia (<19)": "Propor??o de nascimentos de m?es adolescentes com menos de 19 anos.",
-  "?ndice de Vulnerabilidade das Fam?lias do Cad?nico (IVCAD)": "Indicador sint?tico de vulnerabilidade das fam?lias registradas no Cadastro ?nico.",
-  "Pra?as e Parques em ?reas Urbanas": "Disponibilidade relativa de pra?as e parques em ?reas urbanas.",
-  "Fam?lias em Situa??o de Rua": "Registro relativo de fam?lias em situa??o de rua no munic?pio.",
-  "Paridade de G?nero na C?mara Municipal": "Grau de equil?brio entre mulheres e homens na composi??o da C?mara Municipal.",
-  "Paridade de Negros na C?mara Municipal": "Grau de representa??o de pessoas negras na C?mara Municipal em rela??o ao par?metro de refer?ncia.",
-  "Viol?ncia Contra Ind?genas": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra pessoas ind?genas.",
-  "Viol?ncia Contra Mulheres": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra mulheres.",
-  "Viol?ncia Contra Negros": "Taxa ou ocorr?ncia relativa de registros de viol?ncia contra pessoas negras.",
-  "Empregados com Ensino Superior": "Participa??o ou densidade de v?nculos formais ocupados por pessoas com ensino superior.",
-  "Mulheres Empregadas com Ensino Superior": "Participa??o ou densidade de v?nculos formais de mulheres com ensino superior.",
-  "Nota Mediana no Enem": "Nota mediana obtida no Enem pelos estudantes vinculados ao munic?pio.",
+
+type IndicatorDetail = {
+  source: string;
+  unit: string;
+  year: string;
+  description: string;
+};
+
+const INDICATOR_DETAILS_BY_SLUG: Record<string, IndicatorDetail> = {
+  "coberturavacinalpoliomielite": { source: "IEPS, PNI, TabNet/DataSUS e Ministerio da Saude", unit: "Porcentagem da populacao-alvo", year: "2023", description: "Cobertura vacinal estimada de poliomielite, considerando-se a populacao-alvo: criancas menores de 1 ano (vacina injetavel) ate 4 anos (oral)." },
+  "hospitalizacoesporcondicoessensiveisaatencaoprimaria": { source: "IEPS, SIH, TabNet/DataSUS e Ministerio da Saude", unit: "Internacoes por 100.000 habitantes", year: "2023", description: "Taxa de hospitalizacoes por Condicoes Sensiveis a Atencao Primaria (CSAP) por 100.000 habitantes, realizadas no ambito do SUS, considerando o local de residencia." },
+  "mortalidadeajustadaporcondicoessensiveisaatencaoprimaria": { source: "IEPS, SIM, TabNet/DataSUS e Ministerio da Saude", unit: "Obitos por 100.000 habitantes", year: "2023", description: "Taxa de obitos por 100.000 habitantes, considerando o local de residencia e CSAP, ajustada por idade de acordo com a populacao de referencia." },
+  "mortalidadeinfantilate5anos": { source: "DataSUS/Ministerio da Saude", unit: "Obitos por mil nascidos vivos", year: "2024", description: "Taxa de mortalidade infantil (obitos de criancas menores de 5 anos) por mil nascidos vivos. Estima o risco de um nascido vivo morrer durante os primeiros cinco anos de vida." },
+  "subnutricao": { source: "Sisvan/Ministerio da Saude", unit: "Porcentagem da populacao pesquisada", year: "2025", description: "Populacao de todas as faixas etarias que estao abaixo do peso ideal: criancas de 0 a 10 anos, adolescentes, adultos, idosos e gestantes." },
+  "abastecimentodeaguaviaredededistribuicao": { source: "CadUnico/Ministerio do Desenvolvimento Social e Combate a Fome (MDS)", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem das familias inscritas no CadUnico morando em domicilios com servico de abastecimento de agua adequado, incluindo rede geral de distribuicao." },
+  "esgotamentosanitarioadequado": { source: "CadUnico/MDS", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem das familias inscritas no CadUnico morando em domicilios com servico de coleta de esgoto adequado, incluindo sistema de esgoto canalizado e fossas septicas." },
+  "indicedeabastecimentodeagua": { source: "Sinisa/Ministerio das Cidades", unit: "Porcentagem da populacao", year: "2023", description: "Indice de atendimento total de agua em relacao a populacao atendida, informado pelos prestadores de servicos de saneamento e pela populacao total residente estimada pelo IBGE." },
+  "indicedeperdasdeaguanadistribuicao": { source: "Sinisa/Ministerio das Cidades", unit: "Porcentagem do volume de agua fornecido perdido na distribuicao", year: "2023", description: "Indice de perdas de agua na rede de distribuicao, informadas pelos prestadores de servicos de saneamento." },
+  "domicilioscomcoletaderesiduosadequada": { source: "CadUnico/MDS", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem de familias inscritas no CadUnico morando em domicilios com servico de coleta direta de residuos pela concessionaria de saneamento do municipio." },
+  "domicilioscomiluminacaoeletricaadequada": { source: "CadUnico/MDS", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem de familias inscritas no CadUnico morando em domicilios com iluminacao eletrica adequada, ligada a rede de energia eletrica da concessionaria com medidor proprio." },
+  "domicilioscomparedesadequadas": { source: "CadUnico/MDS", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem de familias inscritas no CadUnico morando em domicilios cujas paredes sao adequadas, como alvenaria ou madeira aparelhada." },
+  "domicilioscompisosadequados": { source: "CadUnico/MDS", unit: "Porcentagem de domicilios", year: "2025", description: "Porcentagem das familias inscritas no CadUnico morando em domicilios cujos pisos sao adequados, como ceramica, carpete, cimento ou madeira aparelhada." },
+  "assassinatosdejovens": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes de 15 a 29 anos", year: "2024", description: "Taxa de homicidios de pessoas na faixa etaria de 15 a 29 anos. Homicidio de jovens e definido como morte deliberadamente infligida a uma pessoa por outra pessoa nesta faixa etaria." },
+  "assassinatosdemulheres": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente de Mulheres Estimada 2024", unit: "Obitos por 100.000 mulheres", year: "2024", description: "Taxa de assassinatos de mulheres. Assassinato de mulheres e definido como a morte deliberadamente infligida a uma pessoa do sexo feminino por outra pessoa." },
+  "homicidios": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes", year: "2024", description: "Taxa bruta de homicidios em relacao a populacao total. Homicidio e definido como a morte deliberadamente infligida a uma pessoa por outra pessoa." },
+  "mortesporacidentesdetransporte": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes", year: "2024", description: "Taxa de mortalidade por acidentes de transporte, incluindo obitos em modais terrestres, aquaviarios e aereo/espaciais." },
+  "abandononoensinofundamental": { source: "Inep", unit: "Porcentagem de alunos", year: "2024", description: "Taxa de abandono escolar para alunos do Ensino Fundamental, ou seja, o ato do aluno abandonar os estudos ou reprovar no ano letivo." },
+  "abandononoensinomedio": { source: "Inep", unit: "Porcentagem de alunos", year: "2024", description: "Taxa de abandono escolar para alunos do Ensino Medio, ou seja, o ato do aluno abandonar os estudos ou reprovar no ano letivo." },
+  "evasaonoensinomedio": { source: "Inep", unit: "Porcentagem de alunos", year: "2021-2022", description: "Taxa de evasao para alunos do Ensino Medio. A evasao e o percentual de alunos que deixa de frequentar a escola de um ano para outro, isto e, quando nao se matricula no ano seguinte." },
+  "distorcaoidadeserienoensinomedio": { source: "Inep", unit: "Porcentagem de alunos", year: "2024", description: "Taxa de distorcao idade-serie para alunos do Ensino Medio. Indica o percentual de alunos com idade acima da esperada para o ano em que estao matriculados." },
+  "idebensinofundamental": { source: "Inep", unit: "Indice (0-10)", year: "2023", description: "O Ideb mede a qualidade do ensino nas escolas a partir da taxa de rendimento escolar e do desempenho medio nas provas do Inep." },
+  "reprovacaoescolarnoensinomedio": { source: "Inep", unit: "Porcentagem de alunos", year: "2024", description: "Reprovacao escolar para alunos do Ensino Medio, ou seja, a porcentagem de alunos que reprovam na serie no referido ano letivo." },
+  "coberturadeinternetmovel4g5g": { source: "Agencia Nacional de Telecomunicacoes (Anatel)", unit: "Porcentagem de moradores cobertos", year: "2024", description: "Estimativa da cobertura movel considerando tecnologias, frequencias, localizacao das estacoes, altura e direcao das antenas, potencias dos transmissores, edificacoes e relevo, normalizados pela Anatel." },
+  "densidadedeinternetbandalargafixa": { source: "Anatel", unit: "Acessos a banda larga fixa por 100 domicilios", year: "2024", description: "Densidade dos acessos em servico associados a prestacao do Servico de Comunicacao Multimidia, representada pelo numero de acessos em servico por grupo de 100 domicilios." },
+  "densidadetelefoniamovel": { source: "Anatel", unit: "Acessos de telefonia movel por 100 habitantes", year: "2024", description: "Densidade dos acessos em operacao associados a prestacao do Servico Movel Pessoal, representada pelo numero de acessos em operacao por grupo de 100 habitantes." },
+  "qualidadedeinternetmovel": { source: "Anatel", unit: "Porcentagem de conexoes sem quedas ou congestionamentos", year: "2025", description: "Mede a qualidade do servico de internet movel, expressa pela capacidade da rede em relacao ao cumprimento das referencias ou valores contratados de volume de dados transmitidos por segundo." },
+  "consumodeultraprocessados": { source: "Sisvan/Ministerio da Saude", unit: "Porcentagem da populacao adolescente e adulta pesquisada", year: "2025", description: "Porcentagem da populacao adolescente e adulta que respondeu positivamente a pergunta sobre o habito de consumir alimentos ultraprocessados em relacao ao total de participantes." },
+  "expectativadevida": { source: "Instituto de Pesquisa Economica Aplicada (Ipea)", unit: "Anos", year: "2010", description: "Numero medio de anos de vida esperados para um recem-nascido, mantidos os padroes de mortalidade observados na populacao residente em determinado espaco geografico, no ano de referencia." },
+  "mortalidadeentre15e50anos": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes da faixa etaria", year: "2024", description: "Numero de obitos por qualquer causa para cada 100.000 habitantes na faixa etaria de 15 a 50 anos." },
+  "mortalidadespordoencascronicasnaotransmissiveis": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes da faixa etaria", year: "2024", description: "Taxa de obitos por Doencas Cronicas Nao Transmissiveis por 100.000 habitantes, ajustada por faixas etarias. Inclui doencas cerebrovasculares, cardiovasculares, neoplasias, obesidade, diabetes e hipertensao." },
+  "obesidade": { source: "Sisvan/Ministerio da Saude", unit: "Porcentagem da populacao pesquisada", year: "2025", description: "Populacao de todas as idades em situacao de obesidade de acordo com o Indice de Massa Corporal (IMC) em relacao ao total de pessoas cujo peso foi medido." },
+  "suicidios": { source: "DataSUS/Ministerio da Saude; IBGE - Populacao Residente Estimada 2024", unit: "Obitos por 100.000 habitantes", year: "2024", description: "Taxa de mortalidade por suicidio. Corresponde ao numero de mortes devido a lesao autoprovocada intencionalmente." },
+  "areasverdesurbanas": { source: "MapBiomas", unit: "Porcentagem da area de vegetacao sobre a mancha urbana", year: "2022", description: "Porcentagem de area de vegetacao detectada pela colecao Sentinel-Beta nas sedes urbanas dos municipios em relacao a area da mancha urbana total definida pelo MapBiomas." },
+  "emissoesdecoeporhabitante": { source: "SEEG e IBGE - Populacao Residente Estimada 2024", unit: "CO2e por habitante", year: "2024", description: "Taxa de emissoes totais brutas em CO2 equivalente com potencial de aquecimento global AR5 em relacao ao numero de habitantes do municipio." },
+  "focosdecalor": { source: "Inpe e IBGE - Populacao Residente Estimada 2025", unit: "Focos de calor por 10.000 habitantes", year: "2025", description: "Taxa de focos de calor na area do municipio em relacao ao numero de habitantes. Focos de calor provenientes dos satelites AQUA-MT, manha e tarde." },
+  "indicedevulnerabilidadeclimaticadosmunicipiosivcm": { source: "Instituto Votorantim", unit: "Indice (0-100)", year: "2024", description: "Indice que contempla riscos climaticos mais urgentes para os municipios brasileiros, como inundacoes, enchentes, alagamentos, enxurradas, deslizamentos, seca, queimadas e impactos na agropecuaria e na saude ligados ao clima." },
+  "supressaodavegetacaoprimariaesecundaria": { source: "MapBiomas; IBGE - Area dos municipios", unit: "Porcentagem da area suprimida", year: "2024", description: "Taxa de supressao da vegetacao primaria e secundaria oriunda da colecao 10 do MapBiomas em relacao a area total do municipio." },
+  "acessoaprogramasdedireitoshumanos": { source: "Pesquisa Munic-IBGE", unit: "Categoria: 0 a 13", year: "2023", description: "Mede a existencia e quantidade de programas de politicas publicas municipais voltadas aos direitos humanos da populacao, como protecao de vitimas de violencia domestica, promocao da igualdade racial e outros." },
+  "existenciadeacoesparadireitosdeminorias": { source: "Pesquisa Munic-IBGE", unit: "Categoria: 0 a 12", year: "2023", description: "Verifica se ha politicas publicas municipais com acoes para grupos especificos, como criancas e adolescentes, mulheres, pessoas idosas e populacao de rua." },
+  "indicedeatendimentoademandadejustica": { source: "Conselho Nacional de Justica (CNJ)", unit: "Porcentagem de processos baixados em relacao ao numero de casos novos", year: "2025", description: "Indica a capacidade do Poder Judiciario em dar vazao ao volume de processos. Calculado pela relacao entre processos baixados e casos novos nos tribunais estaduais." },
+  "respostaaprocessosfamiliares": { source: "CNJ", unit: "Tempo medio em dias", year: "2025", description: "Valor medio do numero de dias decorridos entre o inicio da acao judicial e a data do primeiro julgamento de processos de familia, considerando-se os processos julgados nos 12 meses anteriores." },
+  "respostaaprocessosprevidenciarios": { source: "CNJ", unit: "Tempo medio em dias", year: "2025", description: "Valor medio do numero de dias decorridos entre o inicio da acao judicial e a data do primeiro julgamento de processos previdenciarios, considerando-se os processos julgados nos 12 meses anteriores." },
+  "taxadecongestionamentoliquidadeprocessos": { source: "CNJ", unit: "Porcentagem de processos baixados", year: "2025", description: "Taxa de congestionamento de um tribunal de justica estadual, ou seja, a relacao entre processos solucionados e os que nao foram solucionados. Quanto maior a taxa, mais dificil para o tribunal lidar com seu estoque." },
+  "acessoaculturalazereesporte": { source: "IBGE", unit: "Categoria: 0 a 11", year: "2021", description: "Existencia no municipio de promocao de eventos e equipamentos, como biblioteca, teatro, centro cultural, estadios e ginasios, de forma a fomentar cultura e esporte para as pessoas no municipio." },
+  "gravideznaadolescencia19": { source: "DataSUS/Ministerio da Saude - nascidos vivos", unit: "Nascidos vivos de maes ate 19 anos em relacao ao total", year: "2024", description: "Taxa de criancas e adolescentes que tiveram filhos em relacao a populacao feminina total de ate 19 anos. Considera maes menores de 10 anos, de 10 a 14 anos e de 15 a 19 anos." },
+  "indicedevulnerabilidadedasfamiliasdocadunicoivcad": { source: "CadUnico/MDS", unit: "Indice (0-1)", year: "2025", description: "Indice composto por 40 indicadores que medem a condicao de vulnerabilidade das familias inscritas no CadUnico, sintetizada em 6 dimensoes. Quanto mais proximo de 1, maior a vulnerabilidade." },
+  "pracaseparquesemareasurbanas": { source: "MapBiomas; IBGE - Populacao Residente 2022", unit: "Area de pracas por 10.000 habitantes", year: "2022", description: "Taxa de area de pracas e parques urbanos em hectares em relacao a populacao residente do municipio, multiplicada por 10.000." },
+  "familiasemsituacaoderua": { source: "CadUnico/MDS", unit: "Casos por 10.000 familias inscritas no CadUnico", year: "2025", description: "Taxa de familias cadastradas com ao menos um membro em situacao de rua, entre familias inscritas no CadUnico, multiplicada por 10.000." },
+  "paridadedegeneronacamaramunicipal": { source: "Tribunal Superior Eleitoral (TSE)", unit: "0-1", year: "2024", description: "Taxa de paridade de mulheres eleitas nas camaras municipais em relacao a porcentagem da populacao de mulheres de cada municipio." },
+  "paridadedenegrosnacamaramunicipal": { source: "TSE", unit: "0-1", year: "2024", description: "Taxa de paridade de negros e pardos eleitos nas camaras municipais em relacao a porcentagem da populacao de negros e pardos de cada municipio." },
+  "violenciacontraindigenas": { source: "Sinan-DataSUS/Ministerio da Saude; IBGE - Populacao Indigena 2022", unit: "Casos por 10.000 indigenas", year: "2024", description: "Taxa de numero de casos de qualquer tipo de violencia contra os povos indigenas." },
+  "violenciacontramulheres": { source: "Sinan-DataSUS/Ministerio da Saude; IBGE - Populacao Residente de Mulheres Estimada 2024", unit: "Casos por 100.000 mulheres", year: "2024", description: "Taxa de numero de casos de violencia domestica, sexual e outros tipos de violencia contra mulheres em relacao a populacao feminina do municipio." },
+  "violenciacontranegros": { source: "Sinan-DataSUS/Ministerio da Saude; IBGE - Populacao por cor ou raca 2022", unit: "Casos por 100.000 pessoas negras", year: "2024", description: "Taxa de numero de casos de qualquer tipo de violencia contra pessoas negras na classificacao cor/raca preta e parda." },
+  "empregadoscomensinosuperior": { source: "Rais/Ministerio do Trabalho e Emprego; IBGE - Populacao Residente Estimada 2024", unit: "Empregados com 25 anos ou mais por mil habitantes", year: "2024", description: "Taxa do numero de pessoas acima de 25 anos com vinculo ativo com formacao de nivel superior por mil habitantes acima de 25 anos." },
+  "mulheresempregadascomensinosuperior": { source: "Rais/Ministerio do Trabalho e Emprego; IBGE - Populacao Residente de Mulheres Estimada 2024", unit: "Mulheres empregadas por mil mulheres", year: "2024", description: "Numero de mulheres com vinculo ativo e formacao de nivel superior por mil mulheres acima de 25 anos." },
+  "notamediananoenem": { source: "Inep", unit: "200-800 pontos", year: "2024", description: "Mediana da nota do Exame Nacional do Ensino Medio e dados dos alunos do municipio que realizaram a prova no ano de conclusao, considerando apenas os que concluiram todas as provas." },
 };
 
 const SCORECARD_GROUPS = [
@@ -313,6 +317,14 @@ function RankPair({ ranks, compact = false }: { ranks?: { br?: RankInfo | null; 
 
 function getValue(row: RecordRow, indicator: string) {
   return row.values[indicator] ?? null;
+}
+
+function slugText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "")
+    .toLowerCase();
 }
 
 function average(rows: RecordRow[], indicator: string) {
@@ -772,15 +784,18 @@ function DataDictionary({ data }: { data: DashboardData }) {
   const latestRows = data.records.filter((row) => row.year === 2026);
   const described = new Set([IPS, GDP, "População", "Área (km²)", ...data.dimensions, ...data.components, ...SCORECARD_GROUPS.flatMap((group) => group.components.flatMap((component) => component.indicators))]);
   const extraIndicators = data.indicators.filter((indicator) => !described.has(indicator));
-  const indicatorDescription = (indicator: string) => INDICATOR_DESCRIPTIONS[indicator] ?? "Campo numérico presente na base de dados do IPS Pernambuco.";
+  const indicatorDetail = (indicator: string) => INDICATOR_DETAILS_BY_SLUG[slugText(indicator)];
+  const indicatorDescription = (indicator: string) => indicatorDetail(indicator)?.description ?? "Campo numérico presente na base de dados do IPS Pernambuco.";
   const visible = (name: string) => {
-    const haystack = `${name} ${indicatorDescription(name)}`.toLocaleLowerCase("pt-BR");
+    const detail = indicatorDetail(name);
+    const haystack = `${name} ${detail?.description ?? ""} ${detail?.source ?? ""} ${detail?.unit ?? ""} ${detail?.year ?? ""}`.toLocaleLowerCase("pt-BR");
     return !lowerQuery || haystack.includes(lowerQuery);
   };
   const coverage = (indicator: string) => latestRows.filter((row) => getValue(row, indicator) != null).length;
   const polarityLabel = (indicator: string) => (isLowerBetter(indicator) ? "Menor é melhor" : "Maior é melhor");
   const dictionaryRow = (indicator: string, type: string) => {
     if (!visible(indicator)) return null;
+    const detail = indicatorDetail(indicator);
     return (
       <article key={`${type}-${indicator}`} className="dictionary-item">
         <div>
@@ -788,6 +803,20 @@ function DataDictionary({ data }: { data: DashboardData }) {
           <span>{type}</span>
           <small>{indicatorDescription(indicator)}</small>
         </div>
+        <dl>
+          <div>
+            <dt>Fonte</dt>
+            <dd>{detail?.source ?? "Base IPS Pernambuco"}</dd>
+          </div>
+          <div>
+            <dt>Unidade</dt>
+            <dd>{detail?.unit ?? "Valor numérico"}</dd>
+          </div>
+          <div>
+            <dt>Ano</dt>
+            <dd>{detail?.year ?? "Variável"}</dd>
+          </div>
+        </dl>
         <p>{polarityLabel(indicator)}</p>
         <em>{coverage(indicator)}/{latestRows.length} municípios com dado em 2026</em>
       </article>
