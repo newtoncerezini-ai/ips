@@ -583,8 +583,10 @@ function Ranking({ rows, query, indicator, setSelectedCode, setView }: { rows: R
 
 function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView }: { data: DashboardData; rows: RecordRow[]; indicator: string; selectedCode: string; setSelectedCode: (code: string) => void; setView: (view: View) => void }) {
   const [mapMetric, setMapMetric] = useState(indicator || IPS);
+  const [hoverCode, setHoverCode] = useState<string | null>(null);
   const byCode = new globalThis.Map(rows.map((row) => [row.code, row]));
   const selected = byCode.get(selectedCode) ?? rows[0];
+  const hovered = hoverCode ? byCode.get(hoverCode) : selected;
   const breaks = mapBreaks(rows, mapMetric);
   const metricOptions = [
     { title: "Índice de Progresso Social", options: [IPS] },
@@ -595,7 +597,7 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
 
   return (
     <div className="map-workspace">
-      <aside className="map-filters">
+      <section className="map-toolbar">
         <Select label="Indicador do mapa" value={mapMetric} onChange={setMapMetric} options={[IPS, ...data.dimensions, ...data.components]} wide />
         <div className="map-filter-groups">
           {metricOptions.map((group) => (
@@ -621,11 +623,21 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
             </div>
           ))}
         </div>
-      </aside>
+      </section>
+
       <section className="panel map-panel">
         <div className="map-panel-header">
           <PanelTitle title="Mapa de Pernambuco" subtitle={`Cores por ${mapMetric}. Faixas calculadas sobre os municípios do ano selecionado.`} />
         </div>
+        {hovered && (
+          <div className="map-tooltip-card">
+            <strong>{hovered.municipality}</strong>
+            <span>{hovered.region}</span>
+            <p>{mapMetric}</p>
+            <em>{formatNumber(getValue(hovered, mapMetric))}</em>
+            <button onClick={() => setView("scorecard")}>Ver detalhes</button>
+          </div>
+        )}
         <svg viewBox={data.map.viewBox} className="pe-map" role="img" aria-label="Mapa dos municípios de Pernambuco">
           {Object.entries(data.map.paths).map(([code, path]) => {
             const row = byCode.get(code);
@@ -637,6 +649,8 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
                 fill={mapColor(score, breaks)}
                 className={code === selectedCode ? "selected" : ""}
                 onClick={() => row && setSelectedCode(code)}
+                onMouseEnter={() => row && setHoverCode(code)}
+                onMouseLeave={() => setHoverCode(null)}
               >
                 <title>{row ? `${row.municipality}: ${formatNumber(score)}` : code}</title>
               </path>
@@ -644,17 +658,6 @@ function MapView({ data, rows, indicator, selectedCode, setSelectedCode, setView
           })}
         </svg>
       </section>
-      <aside className="panel map-side">
-        <PanelTitle title={selected?.municipality ?? "Município"} subtitle={selected?.region} />
-        <div className="map-score">
-          <span>{mapMetric}</span>
-          <strong>{formatNumber(getValue(selected, mapMetric))}</strong>
-          <p>{classify(getValue(selected, mapMetric))}</p>
-        </div>
-        <button className="button full" onClick={() => setView("scorecard")}>
-          Ver detalhes completos
-        </button>
-      </aside>
     </div>
   );
 }
