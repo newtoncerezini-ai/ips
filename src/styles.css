@@ -193,6 +193,10 @@ h1 {
   padding: 20px 0 22px;
 }
 
+.compact-filters {
+  padding-top: 0;
+}
+
 .search-box {
   width: 290px;
   height: 42px;
@@ -333,6 +337,28 @@ h1 {
 
 .muted {
   color: #64748b;
+}
+
+.capital-note {
+  display: grid;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accent-strong);
+  border-radius: 5px;
+  background: #f8fafc;
+}
+
+.capital-note strong {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.capital-note span {
+  color: #475569;
+  font-weight: 700;
 }
 
 .content-grid {

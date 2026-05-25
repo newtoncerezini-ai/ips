@@ -18,6 +18,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   LabelList,
   Legend,
   Line,
@@ -45,7 +46,7 @@ type RecordRow = {
   uf: string;
   region: string;
   values: Values;
-  ranks: Record<string, { br?: RankInfo | null; pe?: RankInfo | null }>;
+  ranks: Record<string, { br?: RankInfo | null; pe?: RankInfo | null; capital?: RankInfo | null; capitalRegion?: RankInfo | null }>;
 };
 
 type RankInfo = {
@@ -55,6 +56,8 @@ type RankInfo = {
 
 type DashboardData = {
   records: RecordRow[];
+  capitalRecords?: RecordRow[];
+  capitalRegions?: string[];
   regions: string[];
   indicators: string[];
   indicatorPolarity?: Record<string, "higher" | "lower">;
@@ -67,7 +70,7 @@ type DashboardData = {
   sourceNote: string;
 };
 
-type View = "overview" | "ranking" | "map" | "scorecard" | "charts" | "dictionary";
+type View = "overview" | "ranking" | "map" | "scorecard" | "charts" | "capitals" | "dictionary";
 type ChartTab = "radar" | "regression" | "temporal";
 
 const YEARS = [2026, 2025, 2024];
@@ -464,6 +467,7 @@ function App() {
           <NavButton active={view === "map"} icon={<MapIcon size={20} />} label="Mapa" onClick={() => setView("map")} />
           <NavButton active={view === "scorecard"} icon={<SlidersHorizontal size={20} />} label="Scorecard" onClick={() => setView("scorecard")} />
           <NavButton active={view === "charts"} icon={<BarChart3 size={20} />} label="Gráficos" onClick={() => setView("charts")} />
+          <NavButton active={view === "capitals"} icon={<LandPlot size={20} />} label="Capitais" onClick={() => setView("capitals")} />
           <NavButton active={view === "dictionary"} icon={<BookOpenText size={20} />} label="Dicionário" onClick={() => setView("dictionary")} />
         </nav>
         <div className="sidebar-note">
@@ -505,6 +509,7 @@ function App() {
         {view === "map" && <MapView data={data} rows={allYearRows} year={year} setYear={setYear} indicator={indicator} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "scorecard" && <Scorecard data={data} selected={selected} year={year} selectedCode={selectedCode} setSelectedCode={setSelectedCode} />}
         {view === "charts" && <ChartsPage data={data} year={year} tab={chartTab} setTab={setChartTab} />}
+        {view === "capitals" && <CapitalsPage data={data} year={year} />}
         {view === "dictionary" && <DataDictionary data={data} />}
       </main>
     </div>
@@ -572,6 +577,7 @@ function titleFor(view: View) {
     map: "Mapa Social do IPS",
     scorecard: "Scorecard Municipal",
     charts: "Gráficos",
+    capitals: "Capitais do Brasil",
     dictionary: "Dicionário de Dados",
   }[view];
 }
@@ -718,6 +724,133 @@ function Ranking({ rows, query, indicator, setSelectedCode, setView }: { rows: R
         </table>
       </div>
     </section>
+  );
+}
+
+function CapitalsPage({ data, year }: { data: DashboardData; year: number }) {
+  const [capitalRegion, setCapitalRegion] = useState("Todas");
+  const [capitalIndicator, setCapitalIndicator] = useState(IPS);
+  const capitalRecords = data.capitalRecords ?? [];
+  const yearRows = capitalRecords.filter((row) => row.year === year);
+  const rows = yearRows.filter((row) => capitalRegion === "Todas" || row.region === capitalRegion);
+  const ranked = rankRows(rows, capitalIndicator);
+  const capitalChartData = ranked.map((row, index) => ({
+    capital: `${index + 1}. ${row.municipality}`,
+    valor: getValue(row, capitalIndicator),
+    uf: row.uf,
+    code: row.code,
+  }));
+  const allRanked = rankRows(yearRows, capitalIndicator);
+  const top = ranked[0];
+  const bottom = ranked[ranked.length - 1];
+  const mean = average(rows, capitalIndicator);
+  const recife = yearRows.find((row) => row.code === "2611606");
+  const lowerBetter = isLowerBetter(capitalIndicator);
+  const indicators = [IPS, ...data.dimensions, ...data.components, ...data.indicators.filter((item) => !CORE.includes(item) && !data.components.includes(item))];
+  const regionData = Object.values(
+    yearRows.reduce<Record<string, { region: string; value: number; count: number }>>((acc, row) => {
+      const value = getValue(row, capitalIndicator);
+      if (value == null) return acc;
+      acc[row.region] ??= { region: row.region, value: 0, count: 0 };
+      acc[row.region].value += value;
+      acc[row.region].count += 1;
+      return acc;
+    }, {}),
+  )
+    .map((item) => ({ region: item.region, media: Number((item.value / item.count).toFixed(2)) }))
+    .sort((a, b) => (lowerBetter ? a.media - b.media : b.media - a.media));
+
+  return (
+    <div className="page-stack">
+      <section className="filters compact-filters">
+        <Select label="Região do Brasil" value={capitalRegion} onChange={setCapitalRegion} options={["Todas", ...(data.capitalRegions ?? [])]} />
+        <Select label="Indicador" value={capitalIndicator} onChange={setCapitalIndicator} options={indicators} wide />
+      </section>
+
+      <div className="metric-grid">
+        <MetricCard label="Média das capitais" value={formatNumber(mean)} foot={capitalRegion === "Todas" ? `${ranked.length} capitais no comparativo` : `Capitais da região ${capitalRegion}`} />
+        <MetricCard label="Melhor capital" value={top?.municipality ?? "-"} foot={`${top?.uf ?? ""} · ${formatNumber(getValue(top, capitalIndicator))} pontos`} />
+        <MetricCard label="Recife no ranking" value={formatRank(recife?.ranks?.[capitalIndicator]?.capital)} foot={`Brasil: ${formatRank(recife?.ranks?.[capitalIndicator]?.br)} · Nordeste: ${formatRank(recife?.ranks?.[capitalIndicator]?.capitalRegion)}`} tone="muted" />
+      </div>
+
+      <div className="content-grid">
+        <section className="panel wide-panel">
+          <PanelTitle title={`${capitalIndicator} nas capitais`} subtitle={`${capitalRegion === "Todas" ? "Comparativo das 27 capitais brasileiras" : `Recorte das capitais da região ${capitalRegion}`}, ${year}.`} />
+          <div className="chart tall">
+            <ResponsiveContainer>
+              <BarChart data={capitalChartData} margin={{ top: 18, right: 16, bottom: 78, left: 0 }}>
+                <CartesianGrid vertical={false} stroke="#eef2f7" />
+                <XAxis dataKey="capital" angle={-28} textAnchor="end" interval={0} height={92} tick={{ fontSize: 11 }} />
+                <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => formatNumber(Number(value))} />
+                <Bar dataKey="valor" fill="#006591" radius={[3, 3, 0, 0]}>
+                  {capitalChartData.map((item) => (
+                    <Cell key={item.code} fill={item.code === "2611606" ? "#d4475a" : "#006591"} />
+                  ))}
+                  <LabelList dataKey="valor" position="top" formatter={(value) => formatNumber(Number(value), 1)} className="bar-label" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="panel">
+          <PanelTitle title="Média por região" subtitle="Média das capitais por região do Brasil." />
+          <div className="chart compact">
+            <ResponsiveContainer>
+              <BarChart data={regionData} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 82 }}>
+                <CartesianGrid horizontal={false} stroke="#eef2f7" />
+                <XAxis type="number" domain={["dataMin - 2", "dataMax + 2"]} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="region" tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => formatNumber(Number(value))} />
+                <Bar dataKey="media" fill="#0ea5e9" radius={[0, 3, 3, 0]}>
+                  <LabelList dataKey="media" position="right" formatter={(value) => formatNumber(Number(value), 1)} className="bar-label" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="capital-note">
+            <strong>Pior capital no recorte</strong>
+            <span>{bottom ? `${bottom.municipality} (${bottom.uf}) · ${formatNumber(getValue(bottom, capitalIndicator))}` : "-"}</span>
+          </div>
+        </section>
+      </div>
+
+      <section className="panel">
+        <div className="table-header">
+          <PanelTitle title="Ranking das capitais" subtitle={`Mostrando ${ranked.length} de ${allRanked.length} capitais.`} />
+          <span className="legend-dot">{capitalIndicator}</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Capital</th>
+                <th>UF</th>
+                <th>Região</th>
+                <th>Pontuação</th>
+                <th>Ranking Brasil</th>
+                <th>Ranking regional</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((row, index) => (
+                <tr key={`${row.year}-${row.code}`}>
+                  <td><span className={`rank-pill ${index < 3 ? "top" : ""}`}>{String(index + 1).padStart(2, "0")}</span></td>
+                  <td><strong>{row.municipality}</strong></td>
+                  <td>{row.uf}</td>
+                  <td>{row.region}</td>
+                  <td className="score-cell">{formatNumber(getValue(row, capitalIndicator))}</td>
+                  <td>{formatRank(row.ranks?.[capitalIndicator]?.br)}</td>
+                  <td>{formatRank(row.ranks?.[capitalIndicator]?.capitalRegion)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 

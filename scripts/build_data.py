@@ -100,6 +100,67 @@ NAME_ALIASES = {
     "belemdosaofrancisco": "belemdesaofrancisco",
 }
 
+UF_TO_REGION = {
+    "AC": "Norte",
+    "AL": "Nordeste",
+    "AM": "Norte",
+    "AP": "Norte",
+    "BA": "Nordeste",
+    "CE": "Nordeste",
+    "DF": "Centro-Oeste",
+    "ES": "Sudeste",
+    "GO": "Centro-Oeste",
+    "MA": "Nordeste",
+    "MG": "Sudeste",
+    "MS": "Centro-Oeste",
+    "MT": "Centro-Oeste",
+    "PA": "Norte",
+    "PB": "Nordeste",
+    "PE": "Nordeste",
+    "PI": "Nordeste",
+    "PR": "Sul",
+    "RJ": "Sudeste",
+    "RN": "Nordeste",
+    "RO": "Norte",
+    "RR": "Norte",
+    "RS": "Sul",
+    "SC": "Sul",
+    "SE": "Nordeste",
+    "SP": "Sudeste",
+    "TO": "Norte",
+}
+
+CAPITALS = {
+    "1200401": ("Rio Branco", "AC"),
+    "2704302": ("Maceió", "AL"),
+    "1302603": ("Manaus", "AM"),
+    "1600303": ("Macapá", "AP"),
+    "2927408": ("Salvador", "BA"),
+    "2304400": ("Fortaleza", "CE"),
+    "5300108": ("Brasília", "DF"),
+    "3205309": ("Vitória", "ES"),
+    "5208707": ("Goiânia", "GO"),
+    "2111300": ("São Luís", "MA"),
+    "3106200": ("Belo Horizonte", "MG"),
+    "5002704": ("Campo Grande", "MS"),
+    "5103403": ("Cuiabá", "MT"),
+    "1501402": ("Belém", "PA"),
+    "2507507": ("João Pessoa", "PB"),
+    "2611606": ("Recife", "PE"),
+    "2211001": ("Teresina", "PI"),
+    "4106902": ("Curitiba", "PR"),
+    "3304557": ("Rio De Janeiro", "RJ"),
+    "2408102": ("Natal", "RN"),
+    "1100205": ("Porto Velho", "RO"),
+    "1400100": ("Boa Vista", "RR"),
+    "4314902": ("Porto Alegre", "RS"),
+    "4205407": ("Florianópolis", "SC"),
+    "2800308": ("Aracaju", "SE"),
+    "3550308": ("São Paulo", "SP"),
+    "1721000": ("Palmas", "TO"),
+}
+CAPITAL_CODES = set(CAPITALS)
+
 
 def slug(value: str) -> str:
     value = unicodedata.normalize("NFKD", value or "")
@@ -111,6 +172,9 @@ def slug(value: str) -> str:
 def municipality_key(value: str) -> str:
     key = slug(value)
     return NAME_ALIASES.get(key, key)
+
+
+CAPITAL_BY_NAME_UF = {(municipality_key(name), uf): code for code, (name, uf) in CAPITALS.items()}
 
 
 def clean_header(value: str) -> str:
@@ -210,10 +274,12 @@ def read_xlsx_rows(path: Path, year: int):
     for row in iterator:
         values = list(row)
         code = str(values[0])
+        name = re.sub(r"\s*\([A-Z]{2}\)$", "", str(values[1] or "")).strip()
+        uf = str(values[2] or "").strip()
         measures = {}
         for key, value in zip(headers[3:], values[3:]):
             measures[clean_header(key)] = num(value)
-        rows.append({"year": year, "code": code, "values": measures})
+        rows.append({"year": year, "code": code, "municipality": name.title(), "uf": uf, "values": measures})
     return rows
 
 
@@ -223,60 +289,99 @@ def read_national_csv_rows(path: Path, year: int):
         rows = []
         for source in reader:
             source = {clean_header(k): v for k, v in source.items()}
+            name = re.sub(r"\s*\([A-Z]{2}\)$", "", source["Município"]).strip()
+            uf = source["UF"].strip()
+            code = CAPITAL_BY_NAME_UF.get((municipality_key(name), uf), "")
             measures = {}
             for key, value in source.items():
                 clean = clean_header(key)
                 if clean in {"Município", "UF"}:
                     continue
                 measures[clean] = num(value)
-            rows.append({"year": year, "code": "", "municipality": source["Município"], "uf": source["UF"], "values": measures})
+            rows.append({"year": year, "code": code, "municipality": name.title(), "uf": uf, "values": measures})
         return rows
 
 
-def rank_map(rows, indicators):
+def national_row_key(row: dict) -> str:
+    if row.get("code"):
+        return row["code"]
+    return f"{row.get('uf', '')}:{municipality_key(row.get('municipality', ''))}"
+
+
+def rank_map(rows, indicators, key_fn=lambda row: row["code"]):
     ranks = {}
     for indicator in indicators:
         valid = [row for row in rows if row["values"].get(indicator) is not None]
         valid.sort(key=lambda row: row["values"][indicator], reverse=indicator not in LOWER_IS_BETTER)
         for index, row in enumerate(valid, start=1):
-            ranks.setdefault(row["code"], {})[indicator] = {"position": index, "total": len(valid)}
+            ranks.setdefault(key_fn(row), {})[indicator] = {"position": index, "total": len(valid)}
     return ranks
 
 
-def attach_ranks(records):
+def load_national_by_year():
+    return {
+        2024: read_xlsx_rows(ROOT / "2024_br.xlsx", 2024),
+        2025: read_xlsx_rows(ROOT / "2025_br.xlsx", 2025),
+        2026: read_national_csv_rows(CSV_2026_BR, 2026),
+    }
+
+
+def attach_ranks(records, national_by_year):
     ranked_indicators = sorted({key for row in records for key in row["values"]})
     by_year = {}
     for row in records:
         by_year.setdefault(row["year"], []).append(row)
 
-    national_by_year = {
-        2024: read_xlsx_rows(ROOT / "2024_br.xlsx", 2024),
-        2025: read_xlsx_rows(ROOT / "2025_br.xlsx", 2025),
-        2026: read_national_csv_rows(CSV_2026_BR, 2026),
-    }
-    national_ranks = {}
-    for year, rows in national_by_year.items():
-        if year == 2026:
-            ranks = {}
-            for indicator in ranked_indicators:
-                valid = [row for row in rows if row["values"].get(indicator) is not None]
-                valid.sort(key=lambda row: row["values"][indicator], reverse=indicator not in LOWER_IS_BETTER)
-                for index, row in enumerate(valid, start=1):
-                    if row["uf"] == "PE":
-                        key = municipality_key(row["municipality"])
-                        ranks.setdefault(key, {})[indicator] = {"position": index, "total": len(valid)}
-            national_ranks[year] = ranks
-        else:
-            national_ranks[year] = rank_map(rows, ranked_indicators)
+    national_ranks = {year: rank_map(rows, ranked_indicators, national_row_key) for year, rows in national_by_year.items()}
     pe_ranks = {year: rank_map(rows, ranked_indicators) for year, rows in by_year.items()}
 
     for row in records:
         year = row["year"]
         for indicator in ranked_indicators:
-            national_key = municipality_key(row["municipality"]) if year == 2026 else row["code"]
+            national_key = row["code"] if year != 2026 or row["code"] in CAPITAL_CODES else f"PE:{municipality_key(row['municipality'])}"
             br = national_ranks.get(year, {}).get(national_key, {}).get(indicator)
             pe = pe_ranks.get(year, {}).get(row["code"], {}).get(indicator)
             row["ranks"][indicator] = {"br": br, "pe": pe}
+
+
+def build_capital_records(national_by_year, indicators):
+    records = []
+    for year, rows in national_by_year.items():
+        capital_rows = []
+        for row in rows:
+            code = row.get("code") or CAPITAL_BY_NAME_UF.get((municipality_key(row.get("municipality", "")), row.get("uf", "")))
+            if code not in CAPITAL_CODES:
+                continue
+            capital_name, uf = CAPITALS[code]
+            capital_rows.append(
+                {
+                    "year": year,
+                    "code": code,
+                    "municipality": capital_name,
+                    "uf": uf,
+                    "region": UF_TO_REGION[uf],
+                    "values": row["values"],
+                    "ranks": {},
+                }
+            )
+
+        br_ranks = rank_map(rows, indicators, national_row_key)
+        capital_ranks = rank_map(capital_rows, indicators)
+        regional_ranks = {}
+        for region in sorted(UF_TO_REGION.values()):
+            region_rows = [row for row in capital_rows if row["region"] == region]
+            regional_ranks[region] = rank_map(region_rows, indicators)
+
+        for row in capital_rows:
+            source_key = row["code"]
+            for indicator in indicators:
+                row["ranks"][indicator] = {
+                    "br": br_ranks.get(source_key, {}).get(indicator),
+                    "capital": capital_ranks.get(row["code"], {}).get(indicator),
+                    "capitalRegion": regional_ranks.get(row["region"], {}).get(row["code"], {}).get(indicator),
+                }
+        records.extend(sorted(capital_rows, key=lambda item: item["municipality"]))
+    return records
 
 
 def parse_wkt_polygons(wkt: str):
@@ -366,11 +471,15 @@ def main():
     records.extend(read_csv(RAW / "ips_brasil_2024_pe.csv", 2024, by_name, by_code))
     records.extend(read_csv(RAW / "ips_brasil_2025_pe.csv", 2025, by_name, by_code))
     records.extend(read_csv(CSV_2026, 2026, by_name, by_code))
-    attach_ranks(records)
+    national_by_year = load_national_by_year()
+    attach_ranks(records, national_by_year)
 
     indicators = sorted({key for row in records for key in row["values"]})
+    capital_records = build_capital_records(national_by_year, indicators)
     payload = {
         "records": records,
+        "capitalRecords": capital_records,
+        "capitalRegions": sorted({row["region"] for row in capital_records}),
         "regions": sorted({row["region"] for row in records}),
         "indicators": indicators,
         "indicatorPolarity": {indicator: ("lower" if indicator in LOWER_IS_BETTER else "higher") for indicator in indicators},
@@ -382,7 +491,7 @@ def main():
     with (PUBLIC / "dashboard.json").open("w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
 
-    print(f"Gerado {PUBLIC / 'dashboard.json'} com {len(records)} registros.")
+    print(f"Gerado {PUBLIC / 'dashboard.json'} com {len(records)} registros e {len(capital_records)} registros de capitais.")
 
 
 if __name__ == "__main__":
