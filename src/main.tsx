@@ -1236,6 +1236,20 @@ function RadarComparison({ rows, selectedCodes }: { rows: RecordRow[]; selectedC
   );
 }
 
+function RegressionTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload?: { name?: string; x?: number; y?: number } }> }) {
+  if (!active || !payload?.length) return null;
+  const point = payload.find((item) => item.payload?.name)?.payload;
+  if (!point) return null;
+
+  return (
+    <div className="regression-tooltip-card">
+      <strong>{point.name}</strong>
+      <span>IPS: {formatNumber(point.y ?? null)}</span>
+      <span>PIB per capita: R$ {formatNumber(point.x ?? null)}</span>
+    </div>
+  );
+}
+
 function RegressionChart({ rows }: { rows: RecordRow[] }) {
   const basePoints = rows
     .map((row) => ({ x: getValue(row, GDP), y: getValue(row, IPS), name: row.municipality }))
@@ -1261,7 +1275,7 @@ function RegressionChart({ rows }: { rows: RecordRow[] }) {
           <CartesianGrid stroke="#e2e8f0" />
           <XAxis type="number" dataKey="x" name="PIB per capita" tickFormatter={(value) => `R$ ${formatCompact(Number(value))}`} tick={{ fontSize: 12 }} />
           <YAxis type="number" dataKey="y" name="IPS" domain={["dataMin - 2", "dataMax + 2"]} tick={{ fontSize: 12 }} />
-          <Tooltip cursor={{ strokeDasharray: "3 3" }} formatter={(value, name) => (name === "PIB per capita" ? `R$ ${formatNumber(Number(value))}` : formatNumber(Number(value)))} labelFormatter={(_, payload) => payload?.[0]?.payload?.name ?? ""} />
+          <Tooltip cursor={{ strokeDasharray: "3 3" }} content={<RegressionTooltip />} />
           <Scatter name="Municípios" data={points} fill="#006591" fillOpacity={0.68}>
             <LabelList dataKey="label" position="right" className="scatter-label" />
           </Scatter>
