@@ -1,0 +1,26 @@
+# Controle de versão
+.git
+.gitignore
+
+# Dependências e builds locais (O Docker vai baixar e gerar as dele)
+node_modules
+dist
+.DS_Store
+
+# Dados brutos e planilhas pesadas (Não precisamos deles no contêiner final)
+*.xlsx
+data/raw
+
+# Arquivos de ambiente e segurança
+.env
+*.log
+
+# Cache do Python (caso tenha rodado os scripts localmente)
+__pycache__
+*.pyc
+
+# Cache e estado do RStudio
+.Rproj.user
+.Rhistory
+.Rdata
+.Ruserdata

@@ -297,7 +297,7 @@ function Flag({ type }: { type: "br" | "pe" }) {
   return (
     <img
       className="flag"
-      src={type === "br" ? "/assets/brasil.png" : "/assets/pernambuco.png"}
+      src={type === "br" ? "./assets/brasil.png" : "./assets/pernambuco.png"}
       alt={type === "br" ? "Brasil" : "Pernambuco"}
     />
   );
@@ -428,7 +428,7 @@ function App() {
   const [chartTab, setChartTab] = useState<ChartTab>("radar");
 
   useEffect(() => {
-    fetch("/data/dashboard.json")
+    fetch("./data/dashboard.json")
       .then((response) => response.json())
       .then(setData);
   }, []);
@@ -455,7 +455,7 @@ function App() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <img className="brand-logo" src="/assets/igpe.png" alt="Instituto de Gestão de Pernambuco" />
+          <img className="brand-logo" src="./assets/igpe.png" alt="Instituto de Gestão de Pernambuco" />
           <div>
             <strong>IPS Pernambuco</strong>
             <span>Painel executivo</span>
@@ -475,7 +475,7 @@ function App() {
           <p>{data.sourceNote}</p>
         </div>
         <div className="sidebar-logo-footer">
-          <img className="government-logo" src="/assets/governo-pe-brasao.png" alt="Governo de Pernambuco" />
+          <img className="government-logo" src="./assets/governo-pe-brasao.png" alt="Governo de Pernambuco" />
         </div>
       </aside>
 
